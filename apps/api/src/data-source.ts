@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DataSource } from 'typeorm';
-import { User } from './users/user.entity.js';
+import { User } from './user/user.entity.js';
 
 // Localiza o arquivo .env na raiz do projeto
 const currentDir = dirname(fileURLToPath(import.meta.url));
