@@ -12,6 +12,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
 import { UserService } from './user.service.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateProfileDto } from './dto/update-profile.dto.js';
+import { ChangePasswordDto } from './dto/change-password.dto.js';
 
 @Controller('users')
 export class UserController {
@@ -33,5 +34,13 @@ export class UserController {
     @Body() dto: UpdateProfileDto,
   ) {
     return this.userService.updateProfile(req.user.userId, dto);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Post('me/password')
+  changePassword(
+    @Req() req: { user: { userId: string } },
+    @Body() dto: ChangePasswordDto,
+  ) {
+    return this.userService.changePassword(req.user.userId, dto);
   }
 }

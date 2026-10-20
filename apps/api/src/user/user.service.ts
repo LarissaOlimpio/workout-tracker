@@ -2,6 +2,8 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -10,14 +12,25 @@ import { CreateUserDto } from './dto/create-user.dto.js';
 import * as argon2 from 'argon2';
 import { UserResponseDto } from './dto/user-response.dto.js';
 import { UpdateProfileDto } from './dto/update-profile.dto.js';
+import { ChangePasswordDto } from './dto/change-password.dto.js';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private readonly repo: Repository<User>,
   ) {}
-  findByEmail(email: string) {
+  findByEmail(email: string): Promise<User | null> {
     return this.repo.findOne({ where: { email } });
+  }
+  private toResponse(user: User): UserResponseDto {
+    return { id: user.id, name: user.name, email: user.email };
+  }
+  private async getUserOrFail(id: string): Promise<User> {
+    const user = await this.repo.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
   }
   async create(dto: CreateUserDto) {
     const existUser = await this.findByEmail(dto.email);
@@ -31,38 +44,21 @@ export class UserService {
       email: dto.email,
       passwordHash,
     });
-    return this.repo.save(user);
+    const savedUser = await this.repo.save(user);
+
+    return this.toResponse(savedUser);
   }
 
   async findById(id: string): Promise<UserResponseDto> {
-    const user = await this.repo.findOne({
-      where: { id },
-    });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-    };
-  }
-  private toResponse(user: User): UserResponseDto {
-    return { id: user.id, name: user.name, email: user.email };
+    const user = await this.getUserOrFail(id);
+    return this.toResponse(user);
   }
 
   async updateProfile(
     id: string,
     dto: UpdateProfileDto,
   ): Promise<UserResponseDto> {
-    const user = await this.repo.findOne({
-      where: { id },
-    });
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+    const user = await this.getUserOrFail(id);
 
     const nameChanged = dto.name !== undefined && dto.name !== user.name;
 
@@ -89,5 +85,32 @@ export class UserService {
     const savedUser = await this.repo.save(user);
 
     return this.toResponse(savedUser);
+  }
+  async changePassword(
+    id: string,
+    dto: ChangePasswordDto,
+  ): Promise<{ message: string }> {
+    const user = await this.getUserOrFail(id);
+    const currentPasswordIsValid = await argon2.verify(
+      user.passwordHash,
+      dto.currentPassword,
+    );
+    if (!currentPasswordIsValid) {
+      throw new UnauthorizedException('Current password is incorrect');
+    }
+    const newPasswordIsSame = await argon2.verify(
+      user.passwordHash,
+      dto.newPassword,
+    );
+    if (newPasswordIsSame) {
+      throw new BadRequestException(
+        'New password must be different from current password',
+      );
+    }
+    user.passwordHash = await argon2.hash(dto.newPassword);
+    await this.repo.save(user);
+    return {
+      message: 'Password changed successfully',
+    };
   }
 }
