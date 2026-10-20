@@ -8,6 +8,7 @@ import { Repository } from 'typeorm';
 import { User } from './user.entity.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import * as argon2 from 'argon2';
+import { UserResponseDto } from './dto/user-response.dto.js';
 
 @Injectable()
 export class UserService {
@@ -32,14 +33,18 @@ export class UserService {
     return this.repo.save(user);
   }
 
-  async findById(id: string) {
+  async findById(id: string): Promise<UserResponseDto> {
     const user = await this.repo.findOne({
       where: { id },
     });
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    const { passwordHash, ...result } = user;
-    return result;
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+    };
   }
 }
