@@ -18,7 +18,9 @@ export class UpdateProfileDto {
     message: 'The name contains invalid characters',
   })
   name?: string;
-
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.trim().toLowerCase() : value,
+  )
   @IsOptional()
   @IsEmail()
   email?: string;

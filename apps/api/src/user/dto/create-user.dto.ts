@@ -18,6 +18,9 @@ export class CreateUserDto {
   })
   name: string;
   @IsEmail()
+  @Transform(({ value }) =>
+    typeof value === 'string' ? value.trim().toLowerCase() : value,
+  )
   email: string;
   @IsString()
   @MinLength(8)
