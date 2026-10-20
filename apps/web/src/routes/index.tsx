@@ -1,9 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
-  component: RouteComponent,
+  component: () => (
+    <h1 className="p-8 text-2xl font-bold">Dashboard (logado)</h1>
+  ),
 });
-
-function RouteComponent() {
-  return <div>Hello "/"!</div>;
-}
