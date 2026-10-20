@@ -24,6 +24,7 @@ import { AuthModule } from './auth/auth.module.js';
         database: config.get('DB_NAME'),
         autoLoadEntities: true,
         synchronize: false,
+        logging: ['query', 'error'],
       }),
     }),
     UserModule,

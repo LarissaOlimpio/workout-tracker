@@ -11,6 +11,7 @@ import {
 import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
 import { UserService } from './user.service.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
+import { UpdateProfileDto } from './dto/update-profile.dto.js';
 
 @Controller('users')
 export class UserController {
@@ -24,5 +25,13 @@ export class UserController {
   @Get('me')
   getMe(@Req() req: { user: { userId: string } }) {
     return this.userService.findById(req.user.userId);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Post('me')
+  updateMe(
+    @Req() req: { user: { userId: string } },
+    @Body() dto: UpdateProfileDto,
+  ) {
+    return this.userService.updateProfile(req.user.userId, dto);
   }
 }
