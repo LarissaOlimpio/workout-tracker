@@ -10,6 +10,12 @@ async function bootstrap() {
       transform: true,
     }),
   );
+  const frontendUrl = process.env.FRONTEND_URL ?? 'http://localhost:5173';
+
+  app.enableCors({
+    origin: frontendUrl,
+    credentials: true,
+  });
   await app.listen(process.env.PORT ?? 3000);
 }
 await bootstrap();
