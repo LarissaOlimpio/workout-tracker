@@ -14,6 +14,8 @@ export class CreateUserDto {
     typeof value === 'string' ? value.trim().replace(/\s+/g, ' ') : value,
   )
   @IsNotEmpty()
+  @MinLength(2)
+  @MaxLength(100)
   @Matches(/^[\p{L}\p{M}]+(?:[ '\u2019-][\p{L}\p{M}]+)*$/u, {
     message: 'The name contains invalid characters',
   })

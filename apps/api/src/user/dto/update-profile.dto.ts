@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsString,
   Matches,
+  MaxLength,
   MinLength,
 } from 'class-validator';
 
@@ -14,6 +15,7 @@ export class UpdateProfileDto {
   )
   @IsString()
   @MinLength(2)
+  @MaxLength(100)
   @Matches(/^[\p{L}\p{M}]+(?:[ '\u2019-][\p{L}\p{M}]+)*$/u, {
     message: 'The name contains invalid characters',
   })

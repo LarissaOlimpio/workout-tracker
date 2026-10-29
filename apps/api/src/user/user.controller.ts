@@ -1,10 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
+  Get,
   HttpCode,
   HttpStatus,
+  Patch,
   Post,
-  Get,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -28,12 +30,18 @@ export class UserController {
     return this.userService.findById(req.user.userId);
   }
   @UseGuards(JwtAuthGuard)
-  @Post('me')
+  @Patch('me')
   updateMe(
     @Req() req: { user: { userId: string } },
     @Body() dto: UpdateProfileDto,
   ) {
     return this.userService.updateProfile(req.user.userId, dto);
+  }
+  @UseGuards(JwtAuthGuard)
+  @Delete('me')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  deleteMe(@Req() req: { user: { userId: string } }) {
+    return this.userService.deleteById(req.user.userId);
   }
   @UseGuards(JwtAuthGuard)
   @Post('me/password')

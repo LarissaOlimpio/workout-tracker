@@ -6,7 +6,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 import { User } from './user.entity.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import * as argon2 from 'argon2';
@@ -32,6 +32,16 @@ export class UserService {
     }
     return user;
   }
+  private throwIfUniqueViolation(error: unknown): never {
+    if (
+      error instanceof QueryFailedError &&
+      'code' in error.driverError &&
+      error.driverError.code === '23505'
+    ) {
+      throw new ConflictException('Email already registered');
+    }
+    throw error;
+  }
   async create(dto: CreateUserDto) {
     const existUser = await this.findByEmail(dto.email);
     if (existUser) {
@@ -44,7 +54,12 @@ export class UserService {
       email: dto.email,
       passwordHash,
     });
-    const savedUser = await this.repo.save(user);
+    let savedUser: User;
+    try {
+      savedUser = await this.repo.save(user);
+    } catch (error) {
+      this.throwIfUniqueViolation(error);
+    }
 
     return this.toResponse(savedUser);
   }
@@ -82,9 +97,20 @@ export class UserService {
       user.name = dto.name;
     }
 
-    const savedUser = await this.repo.save(user);
+    let savedUser: User;
+    try {
+      savedUser = await this.repo.save(user);
+    } catch (error) {
+      this.throwIfUniqueViolation(error);
+    }
 
     return this.toResponse(savedUser);
+  }
+  async deleteById(id: string): Promise<void> {
+    const result = await this.repo.delete(id);
+    if (!result.affected) {
+      throw new NotFoundException('User not found');
+    }
   }
   async changePassword(
     id: string,
