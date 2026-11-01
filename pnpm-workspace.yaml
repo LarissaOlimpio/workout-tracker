@@ -1,8 +1,13 @@
 packages:
   - "apps/*"
   - "packages/*"
+skills:
+  dirs:
+    - .codex/skills
 allowBuilds:
   argon2: true
 permissions:
-  '@tanstack/router-plugin':
+  "@tanstack/router-plugin":
     skills: true
+  esbuild:
+    build: true
