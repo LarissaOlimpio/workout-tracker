@@ -45,3 +45,5 @@
 
 - Added JWT-protected self-service user profile GET/PUT endpoints with validated one-to-one profile data and cascade deletion.
 - Added reusable profile enums in `user/types` and a pending PostgreSQL migration for `user_profiles`.
+- Configured TypeORM ESM migration commands and applied `CreateUserProfiles1793285497801` to PostgreSQL.
+- Added `user-profile.service.spec.ts` covering profile lookup, creation, replacement, not-found cases and equipment-array copying; tests were not run.
