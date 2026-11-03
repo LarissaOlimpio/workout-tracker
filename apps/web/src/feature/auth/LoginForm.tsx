@@ -70,7 +70,7 @@ export function LoginForm() {
 
         <div className="text-center text-sm">
           Não tem uma conta?{" "}
-          <Link to="/" className="font-medium text-black hover:underline">
+          <Link to="/signup" className="font-medium text-black hover:underline">
             Cadastre-se
           </Link>
         </div>
