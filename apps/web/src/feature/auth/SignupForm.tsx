@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "../../components/ui/Button";
 import { Label } from "../../components/ui/Label";
 import { Input } from "../../components/ui/Input";
+import { PasswordInput } from "../../components/ui/PasswordInput";
 import { signupSchema, type SignupFormData } from "./schemas/signupSchema";
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
@@ -72,9 +73,8 @@ export function SignupForm() {
             <p className="text-sm text-red-500">{errors.email.message}</p>
           )}
           <Label htmlFor="password">Senha</Label>
-          <Input
+          <PasswordInput
             id="password"
-            type="password"
             placeholder="••••••••"
             {...register("password")}
           />
@@ -82,9 +82,8 @@ export function SignupForm() {
             <p className="text-sm text-red-500">{errors.password.message}</p>
           )}
           <Label htmlFor="confirmPassword">Confirmar Senha</Label>
-          <Input
+          <PasswordInput
             id="confirmPassword"
-            type="password"
             placeholder="••••••••"
             {...register("confirmPassword")}
           />

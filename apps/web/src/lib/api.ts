@@ -1,15 +1,12 @@
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
-export async function api<T>(
-  path: string,
-  options: RequestInit = {},
-): Promise<T> {
+export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
   const res = await fetch(`${BASE_URL}${path}`, {
-    ...options,
+    ...init,
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
-      ...options.headers,
+      ...init.headers,
     },
   });
   if (!res.ok) {
@@ -18,6 +15,5 @@ export async function api<T>(
       status: res.status,
     });
   }
-  if (res.status === 204) return undefined as T;
-  return res.json();
+  return res.status === 204 ? (undefined as T) : res.json();
 }

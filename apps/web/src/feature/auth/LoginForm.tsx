@@ -9,6 +9,7 @@ import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { api } from "../../lib/api";
 import { useQueryClient } from "@tanstack/react-query";
+import { PasswordInput } from "../../components/ui/PasswordInput";
 
 export function LoginForm() {
   const {
@@ -65,9 +66,8 @@ export function LoginForm() {
             <p className="text-sm text-red-500">{errors.email.message}</p>
           )}
           <Label htmlFor="password">Senha</Label>
-          <Input
+          <PasswordInput
             id="password"
-            type="password"
             placeholder="••••••••"
             {...register("password")}
           />

@@ -1,8 +1,9 @@
 import * as React from "react";
 
-type InputProps = React.InputHTMLAttributes<HTMLInputElement>;
-
-export function Input({ className, ...props }: InputProps) {
+export const Input = React.forwardRef<
+  HTMLInputElement,
+  React.ComponentProps<"input">
+>(({ className, ...props }, ref) => {
   return (
     <input
       className={[
@@ -14,7 +15,10 @@ export function Input({ className, ...props }: InputProps) {
       ]
         .filter(Boolean)
         .join(" ")}
+      ref={ref}
       {...props}
     />
   );
-}
+});
+
+Input.displayName = "Input";
