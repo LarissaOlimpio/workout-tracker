@@ -11,7 +11,7 @@ import { api } from "../../lib/api";
 import { useQueryClient } from "@tanstack/react-query";
 import { PasswordInput } from "../../components/ui/PasswordInput";
 
-export function LoginForm() {
+export function LoginForm({ passwordResetSuccess = false }: { passwordResetSuccess?: boolean }) {
   const {
     register,
     handleSubmit,
@@ -52,6 +52,9 @@ export function LoginForm() {
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
+        {passwordResetSuccess && (
+          <p className="text-sm text-green-700">Senha redefinida com sucesso</p>
+        )}
         {serverError && <p className="text-sm text-red-500">{serverError}</p>}
         <div className="space-y-2">
           <Label htmlFor="email">E-mail</Label>

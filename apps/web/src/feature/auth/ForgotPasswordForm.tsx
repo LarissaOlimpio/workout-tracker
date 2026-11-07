@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
 import { Button } from "../../components/ui/Button";
 import { Label } from "../../components/ui/Label";
 import { Input } from "../../components/ui/Input";
@@ -8,6 +9,7 @@ import {
   forgotPasswordSchema,
   type ForgotPasswordFormData,
 } from "./schemas/forgotPasswordSchema";
+import { api } from "../../lib/api";
 export function ForgotPasswordForm() {
   const {
     register,
@@ -16,9 +18,13 @@ export function ForgotPasswordForm() {
   } = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
   });
-  const onSubmit = (data: ForgotPasswordFormData) => {
-    console.log(data);
-  };
+  const mutation = useMutation({
+    mutationFn: (data: ForgotPasswordFormData) =>
+      api("/auth/forgot-password", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+  });
 
   return (
     <div className="w-full max-w-lg">
@@ -33,8 +39,16 @@ export function ForgotPasswordForm() {
       <form
         className="mt-10 space-y-6"
         noValidate
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit((data) => mutation.mutate(data))}
       >
+        {mutation.isSuccess && (
+          <p className="text-sm text-green-700">
+            Se o e-mail estiver cadastrado, enviamos um link de recuperação
+          </p>
+        )}
+        {mutation.isError && (
+          <p className="text-sm text-red-500">Não foi possível enviar o link. Tente novamente.</p>
+        )}
         <div className="space-y-2">
           <Label htmlFor="email">E-mail</Label>
 

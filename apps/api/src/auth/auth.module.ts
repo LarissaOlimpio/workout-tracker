@@ -6,10 +6,16 @@ import { AuthController } from './auth.controller.js';
 import { AuthService } from './auth.service.js';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy.js';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { PasswordResetToken } from './password-reset-token.entity.js';
+import { MailService } from './mail.service.js';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
     UserModule,
+    TypeOrmModule.forFeature([PasswordResetToken]),
+    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 5 }]),
     PassportModule.register({
       defaultStrategy: 'jwt',
     }),
@@ -32,7 +38,7 @@ import { JwtStrategy } from './jwt.strategy.js';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, MailService],
   exports: [AuthService, PassportModule],
 })
 export class AuthModule {}

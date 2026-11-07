@@ -6,7 +6,7 @@ import { Input } from "../../components/ui/Input";
 import { PasswordInput } from "../../components/ui/PasswordInput";
 import { signupSchema, type SignupFormData } from "./schemas/signupSchema";
 import { useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { api } from "../../lib/api";
 
 export function SignupForm() {
@@ -97,6 +97,12 @@ export function SignupForm() {
           <Button className="w-full" type="submit">
             Criar conta
           </Button>
+        </div>
+        <div className="text-center text-sm">
+          Já possui uma conta?{" "}
+          <Link to="/login" className="font-medium text-black hover:underline">
+            Faça o Login
+          </Link>
         </div>
       </form>
     </div>
