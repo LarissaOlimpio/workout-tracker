@@ -44,6 +44,9 @@
 - No root-level lint, build or run commands are configured; database migration execution workflow is not documented.
 
 - Added JWT-protected self-service user profile GET/PUT endpoints with validated one-to-one profile data and cascade deletion.
-- Added reusable profile enums in `user/types` and a pending PostgreSQL migration for `user_profiles`.
+- Created PostgreSQL migration for `user_profiles`.
 - Configured TypeORM ESM migration commands and applied `CreateUserProfiles1793285497801` to PostgreSQL.
-- Added `user-profile.service.spec.ts` covering profile lookup, creation, replacement, not-found cases and equipment-array copying; tests were not run.
+- Added `user-profile.service.spec.ts` covering profile lookup, creation, replacement, not-found cases and equipment-array copying.
+- Implemented cookie-based JWT login/signup, session checks, and logout in the web app.
+- Added rate-limited password recovery with hashed, single-use reset tokens and email delivery via Nodemailer/Mailpit.
+- Added password reset migration, SMTP/Mailpit configuration, and a public reset-password page.
