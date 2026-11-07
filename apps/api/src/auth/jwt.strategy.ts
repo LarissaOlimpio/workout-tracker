@@ -11,15 +11,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new Error('JWT_SECRET is not configured.');
     }
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (request: { cookies?: Record<string, string> }) =>
+          request?.cookies?.access_token ?? null,
+      ]),
       ignoreExpiration: false,
       secretOrKey: secret,
     });
   }
   validate(payload: { sub: string; email: string }) {
-    return {
-      userId: payload.sub,
-      email: payload.email,
-    };
+    return { userId: payload.sub };
   }
 }

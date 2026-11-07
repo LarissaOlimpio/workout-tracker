@@ -4,6 +4,9 @@ import { Button } from "../../components/ui/Button";
 import { Label } from "../../components/ui/Label";
 import { Input } from "../../components/ui/Input";
 import { signupSchema, type SignupFormData } from "./schemas/signupSchema";
+import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { api } from "../../lib/api";
 
 export function SignupForm() {
   const {
@@ -13,9 +16,24 @@ export function SignupForm() {
   } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
   });
+  const [serverError, setServerError] = useState("");
+  const navigate = useNavigate();
 
-  const onSubmit = (data: SignupFormData) => {
-    console.log(data);
+  const onSubmit = async (data: SignupFormData) => {
+    setServerError("");
+    try {
+      await api("/users", {
+        method: "POST",
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          password: data.password,
+        }),
+      });
+      await navigate({ to: "/login" });
+    } catch (error) {
+      setServerError((error as Error).message);
+    }
   };
 
   return (
@@ -31,6 +49,7 @@ export function SignupForm() {
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
+        {serverError && <p className="text-sm text-red-500">{serverError}</p>}
         <div className="space-y-2">
           <Label htmlFor="name">Nome</Label>
           <Input

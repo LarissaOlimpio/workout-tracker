@@ -5,6 +5,10 @@ import { Button } from "../../components/ui/Button";
 import { Label } from "../../components/ui/Label";
 import { Input } from "../../components/ui/Input";
 import { loginSchema, type LoginFormData } from "./schemas/loginSchema";
+import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { api } from "../../lib/api";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function LoginForm() {
   const {
@@ -14,9 +18,25 @@ export function LoginForm() {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   });
-
-  const onSubmit = (data: LoginFormData) => {
-    console.log(data);
+  const [serverError, setServerError] = useState("");
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const onSubmit = async (data: LoginFormData) => {
+    setServerError("");
+    try {
+      await api("/auth/login", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+      queryClient.removeQueries({ queryKey: ["me"] });
+      await navigate({ to: "/" });
+    } catch (error) {
+      setServerError(
+        (error as Error & { status?: number }).status === 401
+          ? "E-mail ou senha inválidos"
+          : (error as Error).message,
+      );
+    }
   };
   return (
     <div className="w-full max-w-lg">
@@ -31,6 +51,7 @@ export function LoginForm() {
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
+        {serverError && <p className="text-sm text-red-500">{serverError}</p>}
         <div className="space-y-2">
           <Label htmlFor="email">E-mail</Label>
           <Input

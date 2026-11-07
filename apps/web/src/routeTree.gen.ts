@@ -9,14 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as ForgotPasswordFormRouteImport } from './routes/forgotPasswordForm'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as AuthIndexRouteImport } from './routes/_auth/index'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AuthRoute = AuthRouteImport.update({
+  id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordFormRoute = ForgotPasswordFormRouteImport.update({
@@ -34,36 +34,48 @@ const SignupRoute = SignupRouteImport.update({
   path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthIndexRoute = AuthIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof AuthIndexRoute
   '/forgotPasswordForm': typeof ForgotPasswordFormRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/forgotPasswordForm': typeof ForgotPasswordFormRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/': typeof AuthIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
+  '/_auth': typeof AuthRouteWithChildren
   '/forgotPasswordForm': typeof ForgotPasswordFormRoute
   '/login': typeof LoginRoute
   '/signup': typeof SignupRoute
+  '/_auth/': typeof AuthIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths: '/' | '/forgotPasswordForm' | '/login' | '/signup'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/forgotPasswordForm' | '/login' | '/signup'
-  id: '__root__' | '/' | '/forgotPasswordForm' | '/login' | '/signup'
+  to: '/forgotPasswordForm' | '/login' | '/signup' | '/'
+  id:
+    | '__root__'
+    | '/_auth'
+    | '/forgotPasswordForm'
+    | '/login'
+    | '/signup'
+    | '/_auth/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRouteWithChildren
   ForgotPasswordFormRoute: typeof ForgotPasswordFormRoute
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
@@ -71,11 +83,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
+    '/_auth': {
+      id: '/_auth'
+      path: ''
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgotPasswordForm': {
@@ -99,11 +111,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SignupRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_auth/': {
+      id: '/_auth/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AuthIndexRouteImport
+      parentRoute: typeof AuthRoute
+    }
   }
 }
 
+interface AuthRouteChildren {
+  AuthIndexRoute: typeof AuthIndexRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthIndexRoute: AuthIndexRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
+  AuthRoute: AuthRouteWithChildren,
   ForgotPasswordFormRoute: ForgotPasswordFormRoute,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
