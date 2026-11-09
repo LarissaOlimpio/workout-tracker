@@ -58,10 +58,10 @@ function ResetPasswordPage() {
         </div>
         {invalidToken ? (
           <div className="mt-10 space-y-4">
-            <p className="text-sm text-red-500">Link inválido ou expirado</p>
+            <p className="text-sm text-danger">Link inválido ou expirado</p>
             <Link
               to="/forgotPasswordForm"
-              className="font-medium text-black hover:underline"
+              className="font-medium text-accent hover:underline"
             >
               Solicitar outro link
             </Link>
@@ -73,7 +73,7 @@ function ResetPasswordPage() {
             onSubmit={handleSubmit((data) => mutation.mutate(data.newPassword))}
           >
             {mutation.isError && (
-              <p className="text-sm text-red-500">Não foi possível redefinir a senha. Tente novamente.</p>
+              <p className="text-sm text-danger">Não foi possível redefinir a senha. Tente novamente.</p>
             )}
             <div className="space-y-2">
               <Label htmlFor="newPassword">Nova senha</Label>
@@ -82,7 +82,7 @@ function ResetPasswordPage() {
                 {...register("newPassword")}
               />
               {errors.newPassword && (
-                <p className="text-sm text-red-500">
+                <p className="text-sm text-danger">
                   {errors.newPassword.message}
                 </p>
               )}
@@ -92,7 +92,7 @@ function ResetPasswordPage() {
                 {...register("confirmPassword")}
               />
               {errors.confirmPassword && (
-                <p className="text-sm text-red-500">
+                <p className="text-sm text-danger">
                   {errors.confirmPassword.message}
                 </p>
               )}

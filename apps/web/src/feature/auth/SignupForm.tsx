@@ -50,7 +50,7 @@ export function SignupForm() {
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
-        {serverError && <p className="text-sm text-red-500">{serverError}</p>}
+        {serverError && <p className="text-sm text-danger">{serverError}</p>}
         <div className="space-y-2">
           <Label htmlFor="name">Nome</Label>
           <Input
@@ -60,7 +60,7 @@ export function SignupForm() {
             {...register("name")}
           />
           {errors.name && (
-            <p className="text-sm text-red-500">{errors.name.message}</p>
+            <p className="text-sm text-danger">{errors.name.message}</p>
           )}
           <Label htmlFor="email">E-mail</Label>
           <Input
@@ -70,7 +70,7 @@ export function SignupForm() {
             {...register("email")}
           />
           {errors.email && (
-            <p className="text-sm text-red-500">{errors.email.message}</p>
+            <p className="text-sm text-danger">{errors.email.message}</p>
           )}
           <Label htmlFor="password">Senha</Label>
           <PasswordInput
@@ -79,7 +79,7 @@ export function SignupForm() {
             {...register("password")}
           />
           {errors.password && (
-            <p className="text-sm text-red-500">{errors.password.message}</p>
+            <p className="text-sm text-danger">{errors.password.message}</p>
           )}
           <Label htmlFor="confirmPassword">Confirmar Senha</Label>
           <PasswordInput
@@ -88,7 +88,7 @@ export function SignupForm() {
             {...register("confirmPassword")}
           />
           {errors.confirmPassword && (
-            <p className="text-sm text-red-500">
+            <p className="text-sm text-danger">
               {errors.confirmPassword.message}
             </p>
           )}
@@ -100,7 +100,7 @@ export function SignupForm() {
         </div>
         <div className="text-center text-sm">
           Já possui uma conta?{" "}
-          <Link to="/login" className="font-medium text-black hover:underline">
+          <Link to="/login" className="font-medium text-accent hover:underline">
             Faça o Login
           </Link>
         </div>

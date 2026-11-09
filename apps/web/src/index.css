@@ -1,4 +1,27 @@
 @import "tailwindcss";
+
+@theme {
+  --color-background: #1a2120;
+  --color-surface: #1f2827;
+  --color-input: #2b3231;
+  --color-border: #4a5251;
+  --color-foreground: #f5f7f6;
+  --color-muted-foreground: #9aa3a1;
+  --color-primary: #ff5a1f;
+  --color-primary-hover: #e8500f;
+  --color-primary-foreground: #ffffff;
+  --color-accent: #2fa66a;
+  --color-danger: #f87171;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
 /* Box sizing rules */
 *,
 *::before,

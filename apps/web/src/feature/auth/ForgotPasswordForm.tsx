@@ -31,7 +31,7 @@ export function ForgotPasswordForm() {
       <div className="space-y-2">
         <h2 className="text-3xl font-bold">Recuperar senha</h2>
 
-        <p className="text-slate-500">
+        <p className="text-muted-foreground">
           Informe seu e-mail para receber as instruções.
         </p>
       </div>
@@ -42,12 +42,12 @@ export function ForgotPasswordForm() {
         onSubmit={handleSubmit((data) => mutation.mutate(data))}
       >
         {mutation.isSuccess && (
-          <p className="text-sm text-green-700">
+          <p className="text-sm text-accent">
             Se o e-mail estiver cadastrado, enviamos um link de recuperação
           </p>
         )}
         {mutation.isError && (
-          <p className="text-sm text-red-500">Não foi possível enviar o link. Tente novamente.</p>
+          <p className="text-sm text-danger">Não foi possível enviar o link. Tente novamente.</p>
         )}
         <div className="space-y-2">
           <Label htmlFor="email">E-mail</Label>
@@ -59,7 +59,7 @@ export function ForgotPasswordForm() {
             {...register("email")}
           />
           {errors.email && (
-            <p className="text-sm text-red-500">{errors.email.message}</p>
+            <p className="text-sm text-danger">{errors.email.message}</p>
           )}
         </div>
 
@@ -68,7 +68,7 @@ export function ForgotPasswordForm() {
         </Button>
 
         <div className="text-center">
-          <Link to="/login" className="font-medium text-black hover:underline">
+          <Link to="/login" className="font-medium text-accent hover:underline">
             Voltar para o login
           </Link>
         </div>

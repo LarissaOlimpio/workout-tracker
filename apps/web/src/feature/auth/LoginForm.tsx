@@ -53,9 +53,9 @@ export function LoginForm({ passwordResetSuccess = false }: { passwordResetSucce
         onSubmit={handleSubmit(onSubmit)}
       >
         {passwordResetSuccess && (
-          <p className="text-sm text-green-700">Senha redefinida com sucesso</p>
+          <p className="text-sm text-accent">Senha redefinida com sucesso</p>
         )}
-        {serverError && <p className="text-sm text-red-500">{serverError}</p>}
+        {serverError && <p className="text-sm text-danger">{serverError}</p>}
         <div className="space-y-2">
           <Label htmlFor="email">E-mail</Label>
           <Input
@@ -66,7 +66,7 @@ export function LoginForm({ passwordResetSuccess = false }: { passwordResetSucce
           />
 
           {errors.email && (
-            <p className="text-sm text-red-500">{errors.email.message}</p>
+            <p className="text-sm text-danger">{errors.email.message}</p>
           )}
           <Label htmlFor="password">Senha</Label>
           <PasswordInput
@@ -75,13 +75,13 @@ export function LoginForm({ passwordResetSuccess = false }: { passwordResetSucce
             {...register("password")}
           />
           {errors.password && (
-            <p className="text-sm text-red-500">{errors.password.message}</p>
+            <p className="text-sm text-danger">{errors.password.message}</p>
           )}
         </div>
         <div className="flex justify-end">
           <Link
             to="/forgotPasswordForm"
-            className="text-sm font-medium text-black hover:underline"
+            className="text-sm font-medium text-accent hover:underline"
           >
             Esqueceu sua senha?
           </Link>
@@ -94,7 +94,7 @@ export function LoginForm({ passwordResetSuccess = false }: { passwordResetSucce
 
         <div className="text-center text-sm">
           Não tem uma conta?{" "}
-          <Link to="/signup" className="font-medium text-black hover:underline">
+          <Link to="/signup" className="font-medium text-accent hover:underline">
             Cadastre-se
           </Link>
         </div>
