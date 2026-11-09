@@ -9,11 +9,12 @@ import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto.js';
 import * as argon2 from 'argon2';
 import { createHash, randomBytes } from 'node:crypto';
-import { DataSource, IsNull } from 'typeorm';
+import { DataSource, IsNull, Repository } from 'typeorm';
 import { PasswordResetToken } from './password-reset-token.entity.js';
 import { ForgotPasswordDto } from './dto/forgot-password.dto.js';
 import { ResetPasswordDto } from './dto/reset-password.dto.js';
 import { MailService } from './mail.service.js';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +25,8 @@ export class AuthService {
     private readonly jtwService: JwtService,
     private readonly dataSource: DataSource,
     private readonly mailService: MailService,
+    @InjectRepository(PasswordResetToken)
+    private readonly tokenRepository: Repository<PasswordResetToken>,
   ) {}
   async login(dto: LoginDto) {
     const user = await this.userService.findByEmail(dto.email);
@@ -50,10 +53,9 @@ export class AuthService {
     if (user) {
       const token = randomBytes(32).toString('hex');
       const tokenHash = createHash('sha256').update(token).digest('hex');
-      const tokenRepository = this.dataSource.getRepository(PasswordResetToken);
-      await tokenRepository.delete({ userId: user.id, usedAt: IsNull() });
-      await tokenRepository.save(
-        tokenRepository.create({
+      await this.tokenRepository.delete({ userId: user.id, usedAt: IsNull() });
+      await this.tokenRepository.save(
+        this.tokenRepository.create({
           userId: user.id,
           tokenHash,
           expiresAt: new Date(Date.now() + 30 * 60 * 1000),
