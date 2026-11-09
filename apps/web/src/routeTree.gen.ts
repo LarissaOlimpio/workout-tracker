@@ -15,6 +15,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as AuthIndexRouteImport } from './routes/_auth/index'
+import { Route as AuthProfileSetupRouteImport } from './routes/_auth/profile-setup'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/_auth',
@@ -45,6 +46,11 @@ const AuthIndexRoute = AuthIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthProfileSetupRoute = AuthProfileSetupRouteImport.update({
+  id: '/profile-setup',
+  path: '/profile-setup',
+  getParentRoute: () => AuthRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthIndexRoute
@@ -52,12 +58,14 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/profile-setup': typeof AuthProfileSetupRoute
 }
 export interface FileRoutesByTo {
   '/forgotPasswordForm': typeof ForgotPasswordFormRoute
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/profile-setup': typeof AuthProfileSetupRoute
   '/': typeof AuthIndexRoute
 }
 export interface FileRoutesById {
@@ -67,14 +75,26 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
+  '/_auth/profile-setup': typeof AuthProfileSetupRoute
   '/_auth/': typeof AuthIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/forgotPasswordForm' | '/login' | '/reset-password' | '/signup'
+    | '/'
+    | '/forgotPasswordForm'
+    | '/login'
+    | '/reset-password'
+    | '/signup'
+    | '/profile-setup'
   fileRoutesByTo: FileRoutesByTo
-  to: '/forgotPasswordForm' | '/login' | '/reset-password' | '/signup' | '/'
+  to:
+    | '/forgotPasswordForm'
+    | '/login'
+    | '/reset-password'
+    | '/signup'
+    | '/profile-setup'
+    | '/'
   id:
     | '__root__'
     | '/_auth'
@@ -82,6 +102,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/reset-password'
     | '/signup'
+    | '/_auth/profile-setup'
     | '/_auth/'
   fileRoutesById: FileRoutesById
 }
@@ -137,14 +158,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthIndexRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_auth/profile-setup': {
+      id: '/_auth/profile-setup'
+      path: '/profile-setup'
+      fullPath: '/profile-setup'
+      preLoaderRoute: typeof AuthProfileSetupRouteImport
+      parentRoute: typeof AuthRoute
+    }
   }
 }
 
 interface AuthRouteChildren {
+  AuthProfileSetupRoute: typeof AuthProfileSetupRoute
   AuthIndexRoute: typeof AuthIndexRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
+  AuthProfileSetupRoute: AuthProfileSetupRoute,
   AuthIndexRoute: AuthIndexRoute,
 }
 
