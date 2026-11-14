@@ -8,7 +8,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class UpdateProfileDto {
+export class UpdateUserDto {
   @IsOptional()
   @Transform(({ value }) =>
     typeof value === 'string' ? value.trim().replace(/\s+/g, ' ') : value,

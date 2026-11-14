@@ -14,10 +14,11 @@ import {
 import { JwtAuthGuard } from '../auth/jwt-auth.guard.js';
 import { UserService } from './user.service.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
-import { UpdateProfileDto } from './dto/update-profile.dto.js';
+
 import { ChangePasswordDto } from './dto/change-password.dto.js';
 import { UserProfileDto } from './dto/user-profile.dto.js';
 import { UserProfileService } from './user-profile.service.js';
+import { UpdateUserDto } from './dto/update-user.dto.js';
 
 @Controller('users')
 export class UserController {
@@ -39,7 +40,7 @@ export class UserController {
   @Patch('me')
   updateMe(
     @Req() req: { user: { userId: string } },
-    @Body() dto: UpdateProfileDto,
+    @Body() dto: UpdateUserDto,
   ) {
     return this.userService.updateProfile(req.user.userId, dto);
   }

@@ -11,7 +11,7 @@ import { User } from './user.entity.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import * as argon2 from 'argon2';
 import { UserResponseDto } from './dto/user-response.dto.js';
-import { UpdateProfileDto } from './dto/update-profile.dto.js';
+import { UpdateProfileDto } from './dto/update-user.dto.js';
 import { ChangePasswordDto } from './dto/change-password.dto.js';
 
 @Injectable()

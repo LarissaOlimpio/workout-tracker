@@ -13,7 +13,7 @@ export const RadioCard = forwardRef<HTMLInputElement, RadioCardProps>(
     return (
       <label
         className={[
-          "group relative flex cursor-pointer items-start gap-3 rounded-2xl border border-border bg-input p-4 transition-colors",
+          "group relative flex cursor-pointer items-start gap-3 rounded-2xl border border-border bg-input py-3 px-8 transition-colors",
           "has-[:checked]:border-primary has-[:checked]:bg-primary/10",
           "has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-primary has-[:focus-visible]:ring-offset-2 has-[:focus-visible]:ring-offset-surface",
           className,
