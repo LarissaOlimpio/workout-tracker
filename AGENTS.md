@@ -54,3 +54,10 @@
 - Added rate-limited password recovery with hashed, single-use reset tokens and email delivery via Nodemailer/Mailpit.
 - Added password reset migration, SMTP/Mailpit configuration, and a public reset-password page.
 - Added a profile settings page, accessible only to authenticated users.
+- Reorganized profile routes under `routes/_auth/profile/` and regenerated the TanStack Router tree.
+- Added a `/profile-setup` compatibility redirect to `/profile/setup`; the web build passes.
+- Added a `/profile/summary` page to get the user's profile
+- User module: `UserController` handles only user data (create, me, update, delete, change password). Profile lives in `user/profile/` with its own controller, DTOs, entity, service and enums. Routes are unchanged (`/users/me/profile`).
+- Profile (goal, level, daysPerWeek, equipment, weightKg, heightCm, birthDate, optional chestCm/waistCm/hipCm) is connected to the web form. The form keeps string values and converts them to API types only in the save function.
+- Profile summary page (`/profile/summary`) with a new `video` module: seeded video catalog, per-user like/dislike feedback (unique per user+video) that filters and ranks `GET /users/me/recommendations`.
+- Account settings page (`/account`: name, email, password, delete account) and routes standardized to folder style (`routes/_auth/profile/setup|summary`). Next: profile update/delete and step 3 of 3 of the onboarding flow.
