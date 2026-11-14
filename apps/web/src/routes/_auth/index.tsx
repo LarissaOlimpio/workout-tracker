@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { api } from "../../lib/api";
 import { meQueryOptions } from "../../lib/queries";
 
@@ -22,6 +22,13 @@ function HomePage() {
         <h1 className="mb-6 text-center text-2xl font-bold">Bem-vindo</h1>
         <p className="mb-4 text-center">Olá, {user?.name}</p>
         <p className="mb-4 text-center">Este é um exemplo de página inicial.</p>
+
+        <Link
+          to="/account"
+          className="mt-4 block w-full rounded-full border border-border p-2 text-center font-bold text-foreground transition-colors hover:bg-input focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        >
+          Configurações da conta
+        </Link>
 
         <button
           type="button"

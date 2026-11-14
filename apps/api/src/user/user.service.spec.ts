@@ -104,6 +104,7 @@ describe('UserService', () => {
       repository.save.mockImplementation(async (entity: User) => ({
         ...entity,
         id: userId,
+        createdAt: new Date('2025-01-01T00:00:00.000Z'),
       }));
 
       const result = await service.create(dto);
@@ -121,6 +122,7 @@ describe('UserService', () => {
         id: userId,
         name: 'Alex Morgan',
         email: 'alex@example.com',
+        createdAt: '2025-01-01T00:00:00.000Z',
       });
       expect(result).not.toHaveProperty('password');
       expect(result).not.toHaveProperty('passwordHash');
@@ -178,6 +180,7 @@ describe('UserService', () => {
         id: userId,
         name: 'Alex Morgan',
         email: 'alex@example.com',
+        createdAt: '2025-01-01T00:00:00.000Z',
       });
       expect(repository.findOne).toHaveBeenCalledWith({
         where: { id: userId },
@@ -228,6 +231,7 @@ describe('UserService', () => {
         id: userId,
         name: 'Alexandra Morgan',
         email: 'alexandra@example.com',
+        createdAt: '2025-01-01T00:00:00.000Z',
       });
       expect(result).not.toHaveProperty('passwordHash');
     });
@@ -242,6 +246,7 @@ describe('UserService', () => {
         id: userId,
         name: currentUser.name,
         email: currentUser.email,
+        createdAt: '2025-01-01T00:00:00.000Z',
       });
       expect(repository.save).not.toHaveBeenCalled();
     });

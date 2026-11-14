@@ -23,7 +23,12 @@ export class UserService {
     return this.repo.findOne({ where: { email } });
   }
   private toResponse(user: User): UserResponseDto {
-    return { id: user.id, name: user.name, email: user.email };
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt.toISOString(),
+    };
   }
   private async getUserOrFail(id: string): Promise<User> {
     const user = await this.repo.findOne({ where: { id } });
