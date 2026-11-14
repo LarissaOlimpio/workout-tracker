@@ -16,6 +16,7 @@ import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as AuthIndexRouteImport } from './routes/_auth/index'
 import { Route as AuthProfileSetupRouteImport } from './routes/_auth/profile-setup'
+import { Route as AuthProfileSummaryRouteImport } from './routes/_auth.profile.summary'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/_auth',
@@ -51,6 +52,11 @@ const AuthProfileSetupRoute = AuthProfileSetupRouteImport.update({
   path: '/profile-setup',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthProfileSummaryRoute = AuthProfileSummaryRouteImport.update({
+  id: '/profile/summary',
+  path: '/profile/summary',
+  getParentRoute: () => AuthRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthIndexRoute
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/profile-setup': typeof AuthProfileSetupRoute
+  '/profile/summary': typeof AuthProfileSummaryRoute
 }
 export interface FileRoutesByTo {
   '/forgotPasswordForm': typeof ForgotPasswordFormRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/signup': typeof SignupRoute
   '/profile-setup': typeof AuthProfileSetupRoute
   '/': typeof AuthIndexRoute
+  '/profile/summary': typeof AuthProfileSummaryRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/signup': typeof SignupRoute
   '/_auth/profile-setup': typeof AuthProfileSetupRoute
   '/_auth/': typeof AuthIndexRoute
+  '/_auth/profile/summary': typeof AuthProfileSummaryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -87,6 +96,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/signup'
     | '/profile-setup'
+    | '/profile/summary'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/forgotPasswordForm'
@@ -95,6 +105,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/profile-setup'
     | '/'
+    | '/profile/summary'
   id:
     | '__root__'
     | '/_auth'
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
     | '/signup'
     | '/_auth/profile-setup'
     | '/_auth/'
+    | '/_auth/profile/summary'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -165,17 +177,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthProfileSetupRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_auth/profile/summary': {
+      id: '/_auth/profile/summary'
+      path: '/profile/summary'
+      fullPath: '/profile/summary'
+      preLoaderRoute: typeof AuthProfileSummaryRouteImport
+      parentRoute: typeof AuthRoute
+    }
   }
 }
 
 interface AuthRouteChildren {
   AuthProfileSetupRoute: typeof AuthProfileSetupRoute
   AuthIndexRoute: typeof AuthIndexRoute
+  AuthProfileSummaryRoute: typeof AuthProfileSummaryRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthProfileSetupRoute: AuthProfileSetupRoute,
   AuthIndexRoute: AuthIndexRoute,
+  AuthProfileSummaryRoute: AuthProfileSummaryRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)

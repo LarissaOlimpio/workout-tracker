@@ -5,6 +5,7 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { UserModule } from './user/user.module.js';
 import { AuthModule } from './auth/auth.module.js';
+import { VideoModule } from './video/video.module.js';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { AuthModule } from './auth/auth.module.js';
     }),
     UserModule,
     AuthModule,
+    VideoModule,
   ],
   controllers: [AppController],
   providers: [AppService],

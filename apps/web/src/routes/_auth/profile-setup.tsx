@@ -38,7 +38,7 @@ function ProfileSetupPage() {
   const [validationAttempted, setValidationAttempted] = useState(false);
   const mutation = useMutation({
     mutationFn: saveProfile,
-    onSuccess: () => navigate({ to: "/" }),
+    onSuccess: () => navigate({ to: "/profile/summary" }),
   });
   const {
     register,

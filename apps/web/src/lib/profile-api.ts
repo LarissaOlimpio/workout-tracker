@@ -31,7 +31,32 @@ export interface UserProfile {
   birthDate: string;
 }
 
+export interface RecommendedVideo {
+  id: string;
+  youtubeId: string;
+  title: string;
+  channel: string;
+  durationSeconds: number;
+  myFeedback: "like" | "dislike" | null;
+}
+
+export interface RecommendationResponse {
+  videos: RecommendedVideo[];
+}
+
 export const getProfile = () => api<UserProfile>("/users/me/profile");
+
+export const getRecommendations = () =>
+  api<RecommendationResponse>("/users/me/recommendations");
+
+export const setFeedback = (videoId: string, rating: "like" | "dislike") =>
+  api<{ rating: "like" | "dislike" }>(`/videos/${videoId}/feedback`, {
+    method: "PUT",
+    body: JSON.stringify({ rating }),
+  });
+
+export const clearFeedback = (videoId: string) =>
+  api<void>(`/videos/${videoId}/feedback`, { method: "DELETE" });
 
 export async function saveProfile(values: ProfileFormValues): Promise<void> {
   const [day, month, year] = values.birthDate.split("/");

@@ -7,7 +7,6 @@ import {
   HttpStatus,
   Patch,
   Post,
-  Put,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -16,16 +15,11 @@ import { UserService } from './user.service.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 
 import { ChangePasswordDto } from './dto/change-password.dto.js';
-import { UserProfileDto } from './dto/user-profile.dto.js';
-import { UserProfileService } from './user-profile.service.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 
 @Controller('users')
 export class UserController {
-  constructor(
-    private readonly userService: UserService,
-    private readonly userProfileService: UserProfileService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(@Body() dto: CreateUserDto) {
@@ -57,20 +51,5 @@ export class UserController {
     @Body() dto: ChangePasswordDto,
   ) {
     return this.userService.changePassword(req.user.userId, dto);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('me/profile')
-  getMyProfile(@Req() req: { user: { userId: string } }) {
-    return this.userProfileService.findForUser(req.user.userId);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Put('me/profile')
-  replaceMyProfile(
-    @Req() req: { user: { userId: string } },
-    @Body() dto: UserProfileDto,
-  ) {
-    return this.userProfileService.replaceForUser(req.user.userId, dto);
   }
 }

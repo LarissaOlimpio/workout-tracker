@@ -12,6 +12,6 @@ import { UserProfileController } from './profile/user-profile.controller.js';
   imports: [TypeOrmModule.forFeature([User, UserProfile])],
   controllers: [UserController, UserProfileController],
   providers: [UserService, UserProfileService],
-  exports: [UserService],
+  exports: [UserService, UserProfileService],
 })
 export class UserModule {}
