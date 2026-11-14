@@ -9,6 +9,7 @@ export interface ProfileFormValues {
   birthDate: string;
   heightCm: string;
   weightKg: string;
+  targetWeightKg: string;
   chestCm: string;
   waistCm: string;
   hipCm: string;
@@ -24,6 +25,7 @@ export interface UserProfile {
   daysPerWeek: number;
   equipment: Equipment[];
   weightKg: number;
+  targetWeightKg: number | null;
   heightCm: number;
   chestCm: number | null;
   waistCm: number | null;
@@ -68,6 +70,9 @@ export async function saveProfile(values: ProfileFormValues): Promise<void> {
       daysPerWeek: values.days,
       equipment: values.equipment,
       weightKg: Number(values.weightKg.replace(",", ".")),
+      targetWeightKg: values.targetWeightKg.trim() === ""
+        ? null
+        : Number(values.targetWeightKg.replace(",", ".")),
       heightCm: Number(values.heightCm.replace(",", ".")),
       chestCm: values.chestCm.trim() === "" ? null : Number(values.chestCm.replace(",", ".")),
       waistCm: values.waistCm.trim() === "" ? null : Number(values.waistCm.replace(",", ".")),

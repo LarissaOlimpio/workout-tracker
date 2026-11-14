@@ -57,6 +57,7 @@ function ProfileSetupPage() {
       birthDate: "",
       heightCm: "",
       weightKg: "",
+      targetWeightKg: "",
       chestCm: "",
       waistCm: "",
       hipCm: "",
@@ -75,6 +76,10 @@ function ProfileSetupPage() {
         setValue("birthDate", `${day}/${month}/${year}`);
         setValue("heightCm", String(profile.heightCm));
         setValue("weightKg", String(profile.weightKg));
+        setValue(
+          "targetWeightKg",
+          profile.targetWeightKg === null ? "" : String(profile.targetWeightKg),
+        );
         setValue(
           "chestCm",
           profile.chestCm === null ? "" : String(profile.chestCm),
@@ -193,6 +198,26 @@ function ProfileSetupPage() {
                     </p>
                   )}
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="targetWeightKg">Meta de peso (kg)</Label>
+                <UnitInput
+                  id="targetWeightKg"
+                  unit="kg"
+                  type="text"
+                  inputMode="decimal"
+                  placeholder="68"
+                  aria-describedby={
+                    errors.targetWeightKg ? "targetWeightKg-error" : undefined
+                  }
+                  {...register("targetWeightKg")}
+                />
+                {errors.targetWeightKg && (
+                  <p id="targetWeightKg-error" className="text-sm text-danger">
+                    {errors.targetWeightKg.message}
+                  </p>
+                )}
               </div>
 
               <div className="border-t border-border pt-5">

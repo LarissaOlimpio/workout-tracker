@@ -83,6 +83,7 @@ export const profileSetupSchema = z.object({
     .refine(isAtLeast13, { error: "Você deve ter pelo menos 13 anos" }),
   heightCm: requiredMeasurement("Altura", 100, 250),
   weightKg: requiredMeasurement("Peso", 30, 300),
+  targetWeightKg: optionalMeasurement(30, 300),
   chestCm: optionalMeasurement(30, 250),
   waistCm: optionalMeasurement(30, 250),
   hipCm: optionalMeasurement(30, 250),
