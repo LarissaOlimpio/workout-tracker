@@ -46,6 +46,9 @@ export class UserProfileService {
       equipment: [...dto.equipment],
       weightKg: dto.weightKg,
       heightCm: dto.heightCm,
+      chestCm: dto.chestCm ?? null,
+      waistCm: dto.waistCm ?? null,
+      hipCm: dto.hipCm ?? null,
       birthDate: dto.birthDate.toISOString().slice(0, 10),
     });
 
@@ -60,6 +63,9 @@ export class UserProfileService {
       equipment: [...profile.equipment],
       weightKg: profile.weightKg,
       heightCm: profile.heightCm,
+      chestCm: profile.chestCm,
+      waistCm: profile.waistCm,
+      hipCm: profile.hipCm,
       birthDate: profile.birthDate,
     };
   }

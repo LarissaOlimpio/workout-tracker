@@ -25,6 +25,9 @@ export interface UserProfile {
   equipment: Equipment[];
   weightKg: number;
   heightCm: number;
+  chestCm: number | null;
+  waistCm: number | null;
+  hipCm: number | null;
   birthDate: string;
 }
 
@@ -41,6 +44,9 @@ export async function saveProfile(values: ProfileFormValues): Promise<void> {
       equipment: values.equipment,
       weightKg: Number(values.weightKg.replace(",", ".")),
       heightCm: Number(values.heightCm.replace(",", ".")),
+      chestCm: values.chestCm.trim() === "" ? null : Number(values.chestCm.replace(",", ".")),
+      waistCm: values.waistCm.trim() === "" ? null : Number(values.waistCm.replace(",", ".")),
+      hipCm: values.hipCm.trim() === "" ? null : Number(values.hipCm.replace(",", ".")),
       birthDate: `${year}-${month}-${day}`,
     }),
   });

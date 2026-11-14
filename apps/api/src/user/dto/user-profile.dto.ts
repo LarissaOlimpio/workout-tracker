@@ -7,6 +7,7 @@ import {
   IsEnum,
   IsInt,
   IsNumber,
+  IsOptional,
   Max,
   Min,
   Validate,
@@ -93,6 +94,27 @@ export class UserProfileDto {
   @Min(100)
   @Max(250)
   heightCm: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(30)
+  @Max(250)
+  chestCm?: number | null;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(30)
+  @Max(250)
+  waistCm?: number | null;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(30)
+  @Max(250)
+  hipCm?: number | null;
 
   @Type(() => Date)
   @IsDate()

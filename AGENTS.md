@@ -37,6 +37,9 @@
 - API tests use Vitest 4 and Nest testing utilities; e2e uses Supertest. Unit specs are under `apps/api/src`; e2e specs under `apps/api/test`.
 - Do not read or commit secrets from `.env`; use `.env.example` for variable names. Avoid generated `dist/` and route tree files; make source changes instead.
 - Before finishing, review the diff, run relevant package lint/build/tests, and report commands/results. Do not claim checks ran if they did not.
+- Read only the files needed for the task; no repo-wide scans, no node_modules or lockfiles.
+- No docs and no new tests unless asked. Never edit generated files (routeTree.gen.ts, dist).
+- Run lint and build for the app you changed; report only errors.
 
 ## Open questions
 
@@ -50,3 +53,4 @@
 - Implemented cookie-based JWT login/signup, session checks, and logout in the web app.
 - Added rate-limited password recovery with hashed, single-use reset tokens and email delivery via Nodemailer/Mailpit.
 - Added password reset migration, SMTP/Mailpit configuration, and a public reset-password page.
+- Added a profile settings page, accessible only to authenticated users.

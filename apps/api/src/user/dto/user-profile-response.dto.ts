@@ -11,5 +11,8 @@ export class UserProfileResponseDto {
   equipment: ProfileEquipment[];
   weightKg: number;
   heightCm: number;
+  chestCm: number | null;
+  waistCm: number | null;
+  hipCm: number | null;
   birthDate: string;
 }

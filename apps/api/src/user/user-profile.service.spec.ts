@@ -34,6 +34,9 @@ describe('UserProfileService', () => {
       equipment: [ProfileEquipment.Dumbbells, ProfileEquipment.Bench],
       weightKg: 72.5,
       heightCm: 178,
+      chestCm: 100,
+      waistCm: 80,
+      hipCm: 95,
       birthDate: '1995-04-23',
       ...overrides,
     }) as UserProfile;
@@ -44,6 +47,9 @@ describe('UserProfileService', () => {
     equipment: [ProfileEquipment.ResistanceBands],
     weightKg: 68.25,
     heightCm: 170,
+    chestCm: 98,
+    waistCm: 78,
+    hipCm: 94,
     birthDate: new Date('1990-06-15T00:00:00.000Z'),
   });
 
@@ -90,6 +96,9 @@ describe('UserProfileService', () => {
         equipment: expectedProfile.equipment,
         weightKg: expectedProfile.weightKg,
         heightCm: expectedProfile.heightCm,
+        chestCm: expectedProfile.chestCm,
+        waistCm: expectedProfile.waistCm,
+        hipCm: expectedProfile.hipCm,
         birthDate: expectedProfile.birthDate,
       });
       expect(profileRepository.findOne).toHaveBeenCalledWith({
@@ -134,6 +143,9 @@ describe('UserProfileService', () => {
         equipment: dto.equipment,
         weightKg: dto.weightKg,
         heightCm: dto.heightCm,
+        chestCm: dto.chestCm,
+        waistCm: dto.waistCm,
+        hipCm: dto.hipCm,
         birthDate: '1990-06-15',
       });
       expect(userRepository.findOne).toHaveBeenCalledWith({
@@ -154,6 +166,9 @@ describe('UserProfileService', () => {
           equipment: dto.equipment,
           weightKg: dto.weightKg,
           heightCm: dto.heightCm,
+          chestCm: dto.chestCm,
+          waistCm: dto.waistCm,
+          hipCm: dto.hipCm,
           birthDate: '1990-06-15',
         }),
       );
@@ -179,6 +194,9 @@ describe('UserProfileService', () => {
         equipment: dto.equipment,
         weightKg: dto.weightKg,
         heightCm: dto.heightCm,
+        chestCm: dto.chestCm,
+        waistCm: dto.waistCm,
+        hipCm: dto.hipCm,
         birthDate: '1990-06-15',
       });
       expect(result.birthDate).toBe('1990-06-15');
@@ -213,6 +231,32 @@ describe('UserProfileService', () => {
 
       expect(savedProfile.equipment).not.toBe(dto.equipment);
       expect(result.equipment).not.toBe(savedProfile.equipment);
+    });
+
+    it('stores null for omitted body measurements on PUT', async () => {
+      const dto = profileDto();
+      delete dto.chestCm;
+      delete dto.waistCm;
+      delete dto.hipCm;
+      const existingProfile = profile({ chestCm: 100, waistCm: 80, hipCm: 95 });
+      userRepository.findOne.mockResolvedValue(user);
+      profileRepository.findOne.mockResolvedValue(existingProfile);
+      profileRepository.save.mockImplementation(
+        async (entity: UserProfile) => entity,
+      );
+
+      const result = await service.replaceForUser(userId, dto);
+
+      expect(existingProfile).toMatchObject({
+        chestCm: null,
+        waistCm: null,
+        hipCm: null,
+      });
+      expect(result).toMatchObject({
+        chestCm: null,
+        waistCm: null,
+        hipCm: null,
+      });
     });
   });
 });

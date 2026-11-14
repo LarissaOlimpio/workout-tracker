@@ -62,6 +62,9 @@ function ProfileSetupPage() {
       setValue("birthDate", `${day}/${month}/${year}`);
       setValue("heightCm", String(profile.heightCm));
       setValue("weightKg", String(profile.weightKg));
+      setValue("chestCm", profile.chestCm === null ? "" : String(profile.chestCm));
+      setValue("waistCm", profile.waistCm === null ? "" : String(profile.waistCm));
+      setValue("hipCm", profile.hipCm === null ? "" : String(profile.hipCm));
       setValue("goal", profile.goal);
       setValue("level", profile.level);
       setValue("days", profile.daysPerWeek);

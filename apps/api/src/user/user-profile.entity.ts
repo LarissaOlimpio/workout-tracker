@@ -46,6 +46,15 @@ export class UserProfile {
   @Column({ type: 'double precision' })
   heightCm!: number;
 
+  @Column({ type: 'double precision', nullable: true })
+  chestCm!: number | null;
+
+  @Column({ type: 'double precision', nullable: true })
+  waistCm!: number | null;
+
+  @Column({ type: 'double precision', nullable: true })
+  hipCm!: number | null;
+
   @Column({ type: 'date' })
   birthDate!: string;
 }

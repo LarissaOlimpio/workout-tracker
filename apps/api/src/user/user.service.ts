@@ -11,8 +11,8 @@ import { User } from './user.entity.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import * as argon2 from 'argon2';
 import { UserResponseDto } from './dto/user-response.dto.js';
-import { UpdateProfileDto } from './dto/update-user.dto.js';
 import { ChangePasswordDto } from './dto/change-password.dto.js';
+import { UpdateUserDto } from './dto/update-user.dto.js';
 
 @Injectable()
 export class UserService {
@@ -69,10 +69,7 @@ export class UserService {
     return this.toResponse(user);
   }
 
-  async updateProfile(
-    id: string,
-    dto: UpdateProfileDto,
-  ): Promise<UserResponseDto> {
+  async updateUser(id: string, dto: UpdateUserDto): Promise<UserResponseDto> {
     const user = await this.getUserOrFail(id);
 
     const nameChanged = dto.name !== undefined && dto.name !== user.name;

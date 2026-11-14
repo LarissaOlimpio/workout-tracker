@@ -208,7 +208,7 @@ describe('UserService', () => {
         .mockResolvedValueOnce(null);
       repository.save.mockImplementation(async (entity: User) => entity);
 
-      const result = await service.updateProfile(userId, dto);
+      const result = await service.updateUser(userId, dto);
 
       expect(repository.findOne).toHaveBeenNthCalledWith(1, {
         where: { id: userId },
@@ -237,7 +237,7 @@ describe('UserService', () => {
       repository.findOne.mockResolvedValue(currentUser);
 
       await expect(
-        service.updateProfile(userId, { name: currentUser.name }),
+        service.updateUser(userId, { name: currentUser.name }),
       ).resolves.toEqual({
         id: userId,
         name: currentUser.name,
@@ -250,7 +250,7 @@ describe('UserService', () => {
       repository.findOne.mockResolvedValue(null);
 
       await expect(
-        service.updateProfile(userId, { name: 'Alexandra Morgan' }),
+        service.updateUser(userId, { name: 'Alexandra Morgan' }),
       ).rejects.toBeInstanceOf(NotFoundException);
       expect(repository.save).not.toHaveBeenCalled();
     });
@@ -261,7 +261,7 @@ describe('UserService', () => {
         .mockResolvedValueOnce(user({ id: otherUserId }));
 
       await expect(
-        service.updateProfile(userId, { email: 'taken@example.com' }),
+        service.updateUser(userId, { email: 'taken@example.com' }),
       ).rejects.toBeInstanceOf(ConflictException);
       expect(repository.save).not.toHaveBeenCalled();
     });
@@ -273,7 +273,7 @@ describe('UserService', () => {
       repository.save.mockRejectedValue(postgresUniqueViolation());
 
       await expect(
-        service.updateProfile(userId, { email: 'new@example.com' }),
+        service.updateUser(userId, { email: 'new@example.com' }),
       ).rejects.toMatchObject({
         constructor: ConflictException,
         status: 409,
@@ -288,7 +288,7 @@ describe('UserService', () => {
       repository.save.mockRejectedValue(databaseError);
 
       await expect(
-        service.updateProfile(userId, { email: 'new@example.com' }),
+        service.updateUser(userId, { email: 'new@example.com' }),
       ).rejects.toBe(databaseError);
     });
   });
