@@ -7,22 +7,22 @@ import {
 } from "@tanstack/react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useController, useForm, useWatch } from "react-hook-form";
-import { Button } from "../../components/ui/Button";
-import { Input } from "../../components/ui/Input";
-import { Label } from "../../components/ui/Label";
-import { ChipCheckbox } from "../../components/profile/ChipCheckbox";
-import { RadioCard } from "../../components/profile/RadioCard";
-import { UnitInput } from "../../components/profile/UnitInput";
-import { getProfile, saveProfile, type ProfileFormValues } from "../../lib/profile-api";
-import { profileSetupSchema } from "../../lib/profile-schema";
+import { Button } from "../../../components/ui/Button";
+import { Input } from "../../../components/ui/Input";
+import { Label } from "../../../components/ui/Label";
+import { ChipCheckbox } from "../../../components/profile/ChipCheckbox";
+import { RadioCard } from "../../../components/profile/RadioCard";
+import { UnitInput } from "../../../components/profile/UnitInput";
+import { getProfile, saveProfile, type ProfileFormValues } from "../../../lib/profile-api";
+import { profileSetupSchema } from "../../../lib/profile-schema";
 import {
   daysOptions,
   type Equipment,
   equipmentOptions,
   goalOptions,
   levelOptions,
-} from "../../lib/profile-options";
-import { profileLabels } from "../../lib/profile.labels";
+} from "../../../lib/profile-options";
+import { profileLabels } from "../../../lib/profile.labels";
 
 function maskDate(value: string) {
   const digits = value.replace(/\D/g, "").slice(0, 8);
@@ -383,6 +383,6 @@ function ProfileSetupPage() {
   );
 }
 
-export const Route = createFileRoute("/_auth/profile-setup")({
+export const Route = createFileRoute("/_auth/profile/setup")({
   component: ProfileSetupPage,
 });

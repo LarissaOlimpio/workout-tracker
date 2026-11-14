@@ -3,15 +3,15 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Check, Play } from "lucide-react";
 import { useState } from "react";
 import type { ReactNode } from "react";
-import { Button } from "../components/ui/Button";
+import { Button } from "../../../components/ui/Button";
 import {
   clearFeedback,
   getProfile,
   getRecommendations,
   setFeedback,
   type RecommendationResponse,
-} from "../lib/profile-api";
-import { profileLabels } from "../lib/profile.labels";
+} from "../../../lib/profile-api";
+import { profileLabels } from "../../../lib/profile.labels";
 
 const profileKey = ["profile"];
 const recommendationsKey = ["recommendations"];
@@ -102,7 +102,7 @@ function ProfileSummaryPage() {
         ) : hasError || !profile ? (
           <div className="rounded-3xl border border-border bg-surface p-8">
             <p className="text-danger">Não foi possível carregar seu perfil e as recomendações.</p>
-            <Button className="mt-5" onClick={() => navigate({ to: "/profile-setup" })}>
+            <Button className="mt-5" onClick={() => navigate({ to: "/profile/setup" })}>
               Abrir perfil
             </Button>
           </div>
@@ -154,7 +154,7 @@ function ProfileSummaryPage() {
                 type="button"
                 variant="outline"
                 className="mt-6 h-12 w-full"
-                onClick={() => navigate({ to: "/profile-setup" })}
+                onClick={() => navigate({ to: "/profile/setup" })}
               >
                 Editar perfil
               </Button>

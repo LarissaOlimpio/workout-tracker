@@ -12,11 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as ForgotPasswordFormRouteImport } from './routes/forgotPasswordForm'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ProfileSetupRouteImport } from './routes/profile-setup'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as AuthIndexRouteImport } from './routes/_auth/index'
-import { Route as AuthProfileSetupRouteImport } from './routes/_auth/profile-setup'
-import { Route as AuthProfileSummaryRouteImport } from './routes/_auth.profile.summary'
+import { Route as AuthProfileSetupRouteImport } from './routes/_auth/profile/setup'
+import { Route as AuthProfileSummaryRouteImport } from './routes/_auth/profile/summary'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/_auth',
@@ -30,6 +31,11 @@ const ForgotPasswordFormRoute = ForgotPasswordFormRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileSetupRoute = ProfileSetupRouteImport.update({
+  id: '/profile-setup',
+  path: '/profile-setup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
@@ -48,8 +54,8 @@ const AuthIndexRoute = AuthIndexRouteImport.update({
   getParentRoute: () => AuthRoute,
 } as any)
 const AuthProfileSetupRoute = AuthProfileSetupRouteImport.update({
-  id: '/profile-setup',
-  path: '/profile-setup',
+  id: '/profile/setup',
+  path: '/profile/setup',
   getParentRoute: () => AuthRoute,
 } as any)
 const AuthProfileSummaryRoute = AuthProfileSummaryRouteImport.update({
@@ -62,18 +68,20 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthIndexRoute
   '/forgotPasswordForm': typeof ForgotPasswordFormRoute
   '/login': typeof LoginRoute
+  '/profile-setup': typeof ProfileSetupRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
-  '/profile-setup': typeof AuthProfileSetupRoute
+  '/profile/setup': typeof AuthProfileSetupRoute
   '/profile/summary': typeof AuthProfileSummaryRoute
 }
 export interface FileRoutesByTo {
   '/forgotPasswordForm': typeof ForgotPasswordFormRoute
   '/login': typeof LoginRoute
+  '/profile-setup': typeof ProfileSetupRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
-  '/profile-setup': typeof AuthProfileSetupRoute
   '/': typeof AuthIndexRoute
+  '/profile/setup': typeof AuthProfileSetupRoute
   '/profile/summary': typeof AuthProfileSummaryRoute
 }
 export interface FileRoutesById {
@@ -81,10 +89,11 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteWithChildren
   '/forgotPasswordForm': typeof ForgotPasswordFormRoute
   '/login': typeof LoginRoute
+  '/profile-setup': typeof ProfileSetupRoute
   '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
-  '/_auth/profile-setup': typeof AuthProfileSetupRoute
   '/_auth/': typeof AuthIndexRoute
+  '/_auth/profile/setup': typeof AuthProfileSetupRoute
   '/_auth/profile/summary': typeof AuthProfileSummaryRoute
 }
 export interface FileRouteTypes {
@@ -93,28 +102,31 @@ export interface FileRouteTypes {
     | '/'
     | '/forgotPasswordForm'
     | '/login'
+    | '/profile-setup'
     | '/reset-password'
     | '/signup'
-    | '/profile-setup'
+    | '/profile/setup'
     | '/profile/summary'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/forgotPasswordForm'
     | '/login'
+    | '/profile-setup'
     | '/reset-password'
     | '/signup'
-    | '/profile-setup'
     | '/'
+    | '/profile/setup'
     | '/profile/summary'
   id:
     | '__root__'
     | '/_auth'
     | '/forgotPasswordForm'
     | '/login'
+    | '/profile-setup'
     | '/reset-password'
     | '/signup'
-    | '/_auth/profile-setup'
     | '/_auth/'
+    | '/_auth/profile/setup'
     | '/_auth/profile/summary'
   fileRoutesById: FileRoutesById
 }
@@ -122,6 +134,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRouteWithChildren
   ForgotPasswordFormRoute: typeof ForgotPasswordFormRoute
   LoginRoute: typeof LoginRoute
+  ProfileSetupRoute: typeof ProfileSetupRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
 }
@@ -149,6 +162,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile-setup': {
+      id: '/profile-setup'
+      path: '/profile-setup'
+      fullPath: '/profile-setup'
+      preLoaderRoute: typeof ProfileSetupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -170,10 +190,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthIndexRouteImport
       parentRoute: typeof AuthRoute
     }
-    '/_auth/profile-setup': {
-      id: '/_auth/profile-setup'
-      path: '/profile-setup'
-      fullPath: '/profile-setup'
+    '/_auth/profile/setup': {
+      id: '/_auth/profile/setup'
+      path: '/profile/setup'
+      fullPath: '/profile/setup'
       preLoaderRoute: typeof AuthProfileSetupRouteImport
       parentRoute: typeof AuthRoute
     }
@@ -188,14 +208,14 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthRouteChildren {
-  AuthProfileSetupRoute: typeof AuthProfileSetupRoute
   AuthIndexRoute: typeof AuthIndexRoute
+  AuthProfileSetupRoute: typeof AuthProfileSetupRoute
   AuthProfileSummaryRoute: typeof AuthProfileSummaryRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
-  AuthProfileSetupRoute: AuthProfileSetupRoute,
   AuthIndexRoute: AuthIndexRoute,
+  AuthProfileSetupRoute: AuthProfileSetupRoute,
   AuthProfileSummaryRoute: AuthProfileSummaryRoute,
 }
 
@@ -205,6 +225,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
   ForgotPasswordFormRoute: ForgotPasswordFormRoute,
   LoginRoute: LoginRoute,
+  ProfileSetupRoute: ProfileSetupRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
 }
