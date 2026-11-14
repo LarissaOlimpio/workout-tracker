@@ -10,8 +10,13 @@ export async function api<T>(path: string, init: RequestInit = {}): Promise<T> {
     },
   });
   if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw Object.assign(new Error(body.message ?? "Unexpected error"), {
+    const body: { message?: unknown } = await res.json().catch(() => ({}));
+    const message = Array.isArray(body.message)
+      ? body.message.filter((item): item is string => typeof item === "string").join("; ")
+      : typeof body.message === "string"
+        ? body.message
+        : "Unexpected error";
+    throw Object.assign(new Error(message), {
       status: res.status,
     });
   }

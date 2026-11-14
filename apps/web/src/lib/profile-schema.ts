@@ -61,13 +61,26 @@ function isRealPastDate(value: string) {
   );
 }
 
+function isAtLeast13(value: string) {
+  const [day, month, year] = value.split("/").map(Number);
+  const birth = new Date(year, month - 1, day);
+  const today = new Date();
+  let age = today.getFullYear() - year;
+  if (
+    today.getMonth() < month - 1 ||
+    (today.getMonth() === month - 1 && today.getDate() < day)
+  ) age -= 1;
+  return birth <= today && age >= 13;
+}
+
 export const profileSetupSchema = z.object({
   birthDate: z
     .string()
     .min(1, "Data de nascimento é obrigatória")
     .refine(isRealPastDate, {
       error: "Informe uma data real no passado no formato dd/mm/aaaa",
-    }),
+    })
+    .refine(isAtLeast13, { error: "Você deve ter pelo menos 13 anos" }),
   heightCm: requiredMeasurement("Altura", 100, 250),
   weightKg: requiredMeasurement("Peso", 30, 300),
   chestCm: optionalMeasurement(30, 250),
@@ -82,5 +95,8 @@ export const profileSetupSchema = z.object({
     .max(7, "Selecione uma opção válida"),
   equipment: z
     .array(z.enum(equipmentOptions))
-    .min(1, "Selecione pelo menos um equipamento"),
+    .min(1, "Selecione pelo menos um equipamento")
+    .refine((items) => items.length === 1 || !items.includes("none"), {
+      error: "Nenhum deve ser selecionado sozinho",
+    }),
 });

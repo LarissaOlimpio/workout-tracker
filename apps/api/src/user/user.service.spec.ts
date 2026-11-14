@@ -11,9 +11,10 @@ import { plainToInstance } from 'class-transformer';
 import { QueryFailedError, Repository } from 'typeorm';
 import { ChangePasswordDto } from './dto/change-password.dto.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
-import { UpdateProfileDto } from './dto/update-profile.dto.js';
+
 import { User } from './user.entity.js';
 import { UserService } from './user.service.js';
+import { UpdateUserDto } from './dto/update-user.dto.js';
 
 describe('UserService', () => {
   let service: UserService;
@@ -83,7 +84,9 @@ describe('UserService', () => {
     it('returns null when no account has that email', async () => {
       repository.findOne.mockResolvedValue(null);
 
-      await expect(service.findByEmail('missing@example.com')).resolves.toBeNull();
+      await expect(
+        service.findByEmail('missing@example.com'),
+      ).resolves.toBeNull();
       expect(repository.findOne).toHaveBeenCalledWith({
         where: { email: 'missing@example.com' },
       });
@@ -196,7 +199,7 @@ describe('UserService', () => {
   describe('updateProfile', () => {
     it('normalizes email, saves requested changes, and returns no password data', async () => {
       const currentUser = user();
-      const dto = plainToInstance(UpdateProfileDto, {
+      const dto = plainToInstance(UpdateUserDto, {
         name: 'Alexandra Morgan',
         email: '  ALEXANDRA@EXAMPLE.COM ',
       });
@@ -361,9 +364,7 @@ describe('UserService', () => {
 
     it('rejects a replacement password that matches the current password', async () => {
       const currentHash = await argon2.hash('same-password-1');
-      repository.findOne.mockResolvedValue(
-        user({ passwordHash: currentHash }),
-      );
+      repository.findOne.mockResolvedValue(user({ passwordHash: currentHash }));
 
       await expect(
         service.changePassword(userId, {
@@ -375,4 +376,3 @@ describe('UserService', () => {
     });
   });
 });
-

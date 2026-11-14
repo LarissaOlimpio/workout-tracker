@@ -1,27 +1,28 @@
 import { useMutation } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import {
   createFileRoute,
   useNavigate,
   useRouter,
 } from "@tanstack/react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, useWatch } from "react-hook-form";
+import { useController, useForm, useWatch } from "react-hook-form";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { Label } from "../../components/ui/Label";
 import { ChipCheckbox } from "../../components/profile/ChipCheckbox";
 import { RadioCard } from "../../components/profile/RadioCard";
 import { UnitInput } from "../../components/profile/UnitInput";
-import { saveProfile, type ProfileFormValues } from "../../lib/profile-api";
+import { getProfile, saveProfile, type ProfileFormValues } from "../../lib/profile-api";
 import { profileSetupSchema } from "../../lib/profile-schema";
 import {
   daysOptions,
   type Equipment,
   equipmentOptions,
   goalOptions,
-  labels,
   levelOptions,
 } from "../../lib/profile-options";
+import { profileLabels } from "../../lib/profile.labels";
 
 function maskDate(value: string) {
   const digits = value.replace(/\D/g, "").slice(0, 8);
@@ -33,6 +34,8 @@ function maskDate(value: string) {
 function ProfileSetupPage() {
   const navigate = useNavigate();
   const router = useRouter();
+  const [loadError, setLoadError] = useState(false);
+  const [validationAttempted, setValidationAttempted] = useState(false);
   const mutation = useMutation({
     mutationFn: saveProfile,
     onSuccess: () => navigate({ to: "/" }),
@@ -46,14 +49,41 @@ function ProfileSetupPage() {
     control,
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSetupSchema),
-    defaultValues: { equipment: [] },
+    defaultValues: {
+      birthDate: "", heightCm: "", weightKg: "", chestCm: "", waistCm: "", hipCm: "",
+      goal: undefined, level: undefined, days: undefined, equipment: [],
+    },
   });
+  useEffect(() => {
+    let active = true;
+    getProfile().then((profile) => {
+      if (!active) return;
+      const [year, month, day] = profile.birthDate.slice(0, 10).split("-");
+      setValue("birthDate", `${day}/${month}/${year}`);
+      setValue("heightCm", String(profile.heightCm));
+      setValue("weightKg", String(profile.weightKg));
+      setValue("goal", profile.goal);
+      setValue("level", profile.level);
+      setValue("days", profile.daysPerWeek);
+      setValue("equipment", profile.equipment);
+    }).catch((error: { status?: number }) => {
+      if (!active) return;
+      if (error.status !== 404) setLoadError(true);
+    });
+    return () => { active = false; };
+  }, [setValue]);
   const selectedGoal = useWatch({ control, name: "goal" });
   const selectedLevel = useWatch({ control, name: "level" });
-  const selectedDays = useWatch({ control, name: "days" });
   const selectedEquipment = useWatch({ control, name: "equipment" }) ?? [];
+  const { field: daysField } = useController({ name: "days", control });
 
-  const onSubmit = handleSubmit((values) => mutation.mutate(values));
+  const onSubmit = handleSubmit(
+    (values) => {
+      setValidationAttempted(false);
+      mutation.mutate(values);
+    },
+    () => setValidationAttempted(true),
+  );
   const birthDateField = register("birthDate");
 
   return (
@@ -204,7 +234,7 @@ function ProfileSetupPage() {
                       checked={selectedGoal === goal}
                       {...register("goal")}
                     >
-                      {labels.goal[goal]}
+                      {profileLabels.goal[goal]}
                     </RadioCard>
                   ))}
                 </div>
@@ -228,9 +258,9 @@ function ProfileSetupPage() {
                       {...register("level")}
                       className="min-h-32"
                     >
-                      {labels.level[level]}
+                      {profileLabels.level[level]}
                       <span className="mt-1 block text-sm font-normal leading-snug text-muted-foreground">
-                        {labels.levelDescription[level]}
+                        {profileLabels.levelDescription[level]}
                       </span>
                     </RadioCard>
                   ))}
@@ -251,11 +281,14 @@ function ProfileSetupPage() {
                     <RadioCard
                       key={day}
                       value={day}
-                      checked={selectedDays === day}
-                      {...register("days", { valueAsNumber: true })}
+                      checked={daysField.value === day}
+                      name={daysField.name}
+                      ref={daysField.ref}
+                      onBlur={daysField.onBlur}
+                      onChange={() => daysField.onChange(day)}
                       className="size-12 items-center justify-center rounded-xl p-0"
                     >
-                      {labels.days[day]}
+                      {day}
                     </RadioCard>
                   ))}
                 </div>
@@ -306,7 +339,7 @@ function ProfileSetupPage() {
                       });
                     }}
                   >
-                    {labels.equipment[equipment]}
+                    {profileLabels.equipment[equipment]}
                   </ChipCheckbox>
                 ))}
               </div>
@@ -318,9 +351,11 @@ function ProfileSetupPage() {
             </fieldset>
           </section>
 
-          {mutation.isError && (
+          {(validationAttempted || mutation.isError || loadError) && (
             <p className="text-right text-sm text-danger">
-              Não foi possível salvar seu perfil. Tente novamente.
+              {validationAttempted
+                ? "Revise os campos destacados antes de continuar."
+                : "Não foi possível salvar seu perfil. Tente novamente."}
             </p>
           )}
           <div className="flex flex-col-reverse justify-end gap-3 sm:flex-row">
