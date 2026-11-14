@@ -33,23 +33,34 @@ function ProfileSummaryPage() {
   });
 
   const feedbackMutation = useMutation({
-    mutationFn: async ({ videoId, rating }: { videoId: string; rating: "like" | "dislike" | null }) => {
+    mutationFn: async ({
+      videoId,
+      rating,
+    }: {
+      videoId: string;
+      rating: "like" | "dislike" | null;
+    }) => {
       if (rating === null) await clearFeedback(videoId);
       else await setFeedback(videoId, rating);
     },
     onMutate: async ({ videoId, rating }) => {
       setFeedbackError(false);
       await queryClient.cancelQueries({ queryKey: recommendationsKey });
-      const previous = queryClient.getQueryData<RecommendationResponse>(recommendationsKey);
-      queryClient.setQueryData<RecommendationResponse>(recommendationsKey, (current) =>
-        current
-          ? {
-              ...current,
-              videos: current.videos.map((video) =>
-                video.id === videoId ? { ...video, myFeedback: rating } : video,
-              ),
-            }
-          : current,
+      const previous =
+        queryClient.getQueryData<RecommendationResponse>(recommendationsKey);
+      queryClient.setQueryData<RecommendationResponse>(
+        recommendationsKey,
+        (current) =>
+          current
+            ? {
+                ...current,
+                videos: current.videos.map((video) =>
+                  video.id === videoId
+                    ? { ...video, myFeedback: rating }
+                    : video,
+                ),
+              }
+            : current,
       );
       return { previous };
     },
@@ -59,7 +70,8 @@ function ProfileSummaryPage() {
         queryClient.setQueryData(recommendationsKey, context.previous);
       }
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: recommendationsKey }),
+    onSettled: () =>
+      queryClient.invalidateQueries({ queryKey: recommendationsKey }),
   });
 
   const profile = profileQuery.data;
@@ -76,175 +88,186 @@ function ProfileSummaryPage() {
     : "";
 
   return (
-    <main className="min-h-screen bg-background px-4 py-8 text-foreground sm:px-6 lg:px-12 lg:py-10">
-      <div className="mx-auto max-w-7xl">
-        <header className="mb-8">
-          <div className="flex items-center justify-between gap-4">
-            <div className="text-2xl font-extrabold tracking-tight">
-              TRAIN <span className="text-primary">UP</span>
+    <div className="text-foreground">
+      <div className="mb-8">
+        <p className="mb-2 text-right text-sm font-medium text-muted-foreground">
+          Passo 2 de 3 · Perfil salvo
+        </p>
+        <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
+          Seu perfil está pronto!
+        </h1>
+        <p className="mt-1 text-base text-muted-foreground sm:text-lg">
+          Confira seus dados e veja os vídeos escolhidos para o seu objetivo.
+        </p>
+      </div>
+
+      {isLoading ? (
+        <p className="rounded-3xl border border-border bg-surface p-8 text-muted-foreground">
+          Carregando seu resumo...
+        </p>
+      ) : hasError || !profile ? (
+        <div className="rounded-3xl border border-border bg-surface p-8">
+          <p className="text-danger">
+            Não foi possível carregar seu perfil e as recomendações.
+          </p>
+          <Button
+            className="mt-5"
+            onClick={() => navigate({ to: "/profile/setup" })}
+          >
+            Abrir perfil
+          </Button>
+        </div>
+      ) : (
+        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,0.4fr)_minmax(0,0.6fr)]">
+          <section className="rounded-3xl border border-border bg-surface p-6 sm:p-8">
+            <h2 className="text-base font-extrabold uppercase tracking-wider">
+              Dados físicos e medidas
+            </h2>
+            <div className="mt-5 grid grid-cols-3 gap-3">
+              <Measure label="Altura" value={`${profile.heightCm} cm`} />
+              <Measure label="Peso" value={`${profile.weightKg} kg`} />
+              <Measure label="IMC" value={bmi ?? "—"} />
             </div>
-            <p className="text-sm font-medium text-muted-foreground">
-              Passo 2 de 3 · Perfil salvo
-            </p>
-          </div>
-          <h1 className="mt-7 text-3xl font-extrabold tracking-tight sm:text-4xl">
-            Seu perfil está pronto!
-          </h1>
-          <p className="mt-1 text-base text-muted-foreground sm:text-lg">
-            Confira seus dados e veja os vídeos escolhidos para o seu objetivo.
-          </p>
-        </header>
-
-        {isLoading ? (
-          <p className="rounded-3xl border border-border bg-surface p-8 text-muted-foreground">
-            Carregando seu resumo...
-          </p>
-        ) : hasError || !profile ? (
-          <div className="rounded-3xl border border-border bg-surface p-8">
-            <p className="text-danger">Não foi possível carregar seu perfil e as recomendações.</p>
-            <Button className="mt-5" onClick={() => navigate({ to: "/profile/setup" })}>
-              Abrir perfil
-            </Button>
-          </div>
-        ) : (
-          <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,0.4fr)_minmax(0,0.6fr)]">
-            <section className="rounded-3xl border border-border bg-surface p-6 sm:p-8">
-              <h2 className="text-base font-extrabold uppercase tracking-wider">
-                Dados físicos e medidas
-              </h2>
-              <div className="mt-5 grid grid-cols-3 gap-3">
-                <Measure label="Altura" value={`${profile.heightCm} cm`} />
-                <Measure label="Peso" value={`${profile.weightKg} kg`} />
-                <Measure label="IMC" value={bmi ?? "—"} />
-              </div>
-              {(profile.chestCm !== null || profile.waistCm !== null || profile.hipCm !== null) && (
-                <div className="mt-5">
-                  <h3 className="mb-3 text-sm font-bold">Medidas corporais</h3>
-                  <div className="grid grid-cols-3 gap-3">
-                    {profile.chestCm !== null && <Measure label="Peito" value={`${profile.chestCm} cm`} />}
-                    {profile.waistCm !== null && <Measure label="Cintura" value={`${profile.waistCm} cm`} />}
-                    {profile.hipCm !== null && <Measure label="Quadril" value={`${profile.hipCm} cm`} />}
-                  </div>
+            {(profile.chestCm !== null ||
+              profile.waistCm !== null ||
+              profile.hipCm !== null) && (
+              <div className="mt-5">
+                <h3 className="mb-3 text-sm font-bold">Medidas corporais</h3>
+                <div className="grid grid-cols-3 gap-3">
+                  {profile.chestCm !== null && (
+                    <Measure label="Peito" value={`${profile.chestCm} cm`} />
+                  )}
+                  {profile.waistCm !== null && (
+                    <Measure label="Cintura" value={`${profile.waistCm} cm`} />
+                  )}
+                  {profile.hipCm !== null && (
+                    <Measure label="Quadril" value={`${profile.hipCm} cm`} />
+                  )}
                 </div>
-              )}
-
-              <div className="mt-6 border-t border-border pt-5">
-                <h2 className="text-base font-extrabold uppercase tracking-wider">
-                  Sua rotina e metas
-                </h2>
-                <ProfileDetail label="Objetivo">
-                  <Chip>{profileLabels.goal[profile.goal]}</Chip>
-                </ProfileDetail>
-                <ProfileDetail label="Nível de experiência">
-                  <Chip>{profileLabels.level[profile.level]}</Chip>
-                </ProfileDetail>
-                <ProfileDetail label="Dias de treino por semana">
-                  <Chip>{profile.daysPerWeek} dias</Chip>
-                </ProfileDetail>
-                <ProfileDetail label="Equipamentos em casa">
-                  <div className="flex flex-wrap gap-2">
-                    {profile.equipment.map((item) => (
-                      <Chip key={item}>{profileLabels.equipment[item]}</Chip>
-                    ))}
-                  </div>
-                </ProfileDetail>
               </div>
+            )}
 
-              <Button
-                type="button"
-                variant="outline"
-                className="mt-6 h-12 w-full"
-                onClick={() => navigate({ to: "/profile/setup" })}
-              >
-                Editar perfil
-              </Button>
-            </section>
-
-            <section className="rounded-3xl border border-border bg-surface p-6 sm:p-8">
-              <div className="mb-4">
-                <h2 className="text-base font-extrabold uppercase tracking-wider">
-                  Vídeos recomendados
-                </h2>
-                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                  {baseText}
-                </p>
-              </div>
-              {recommendationsQuery.isError ? (
-                <p className="rounded-2xl border border-border bg-input p-5 text-danger">
-                  Não foi possível carregar os vídeos.
-                </p>
-              ) : recommendations.length === 0 ? (
-                <p className="rounded-2xl border border-border bg-input p-5 text-muted-foreground">
-                  Ainda não há vídeos compatíveis com seu perfil.
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {recommendations.map((video) => (
-                    <article
-                      key={video.id}
-                      className="grid gap-4 rounded-2xl border border-border bg-input/70 p-3 sm:grid-cols-[minmax(150px,200px)_minmax(0,1fr)_150px] sm:items-center sm:gap-5 sm:p-4"
-                    >
-                      <a
-                        href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group relative block aspect-video overflow-hidden rounded-xl bg-background"
-                        aria-label={`Assistir: ${video.title}`}
-                      >
-                        <img
-                          src={`https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`}
-                          alt=""
-                          className="h-full w-full object-cover brightness-[0.55] transition duration-300 group-hover:brightness-75"
-                        />
-                        <span className="absolute inset-0 grid place-items-center text-white">
-                          <span className="grid size-11 place-items-center rounded-full bg-primary shadow-lg">
-                            <Play className="ml-1 size-5 fill-current" />
-                          </span>
-                        </span>
-                        <span className="absolute bottom-1.5 right-1.5 rounded bg-black px-1.5 py-0.5 text-xs font-bold text-white">
-                          {formatDuration(video.durationSeconds)}
-                        </span>
-                      </a>
-                      <div className="min-w-0">
-                        <h3 className="font-bold leading-snug">{video.title}</h3>
-                        <p className="mt-1 text-sm text-muted-foreground">
-                          {video.channel} · YouTube
-                        </p>
-                      </div>
-                      <div className="grid gap-2">
-                        <FeedbackButton
-                          label="Gostei"
-                          selected={video.myFeedback === "like"}
-                          disabled={feedbackMutation.isPending}
-                          onClick={() => feedbackMutation.mutate({
-                            videoId: video.id,
-                            rating: video.myFeedback === "like" ? null : "like",
-                          })}
-                        />
-                        <FeedbackButton
-                          label="Não gostei"
-                          selected={video.myFeedback === "dislike"}
-                          disabled={feedbackMutation.isPending}
-                          onClick={() => feedbackMutation.mutate({
-                            videoId: video.id,
-                            rating: video.myFeedback === "dislike" ? null : "dislike",
-                          })}
-                        />
-                      </div>
-                    </article>
+            <div className="mt-6 border-t border-border pt-5">
+              <h2 className="text-base font-extrabold uppercase tracking-wider">
+                Sua rotina e metas
+              </h2>
+              <ProfileDetail label="Objetivo">
+                <Chip>{profileLabels.goal[profile.goal]}</Chip>
+              </ProfileDetail>
+              <ProfileDetail label="Nível de experiência">
+                <Chip>{profileLabels.level[profile.level]}</Chip>
+              </ProfileDetail>
+              <ProfileDetail label="Dias de treino por semana">
+                <Chip>{profile.daysPerWeek} dias</Chip>
+              </ProfileDetail>
+              <ProfileDetail label="Equipamentos em casa">
+                <div className="flex flex-wrap gap-2">
+                  {profile.equipment.map((item) => (
+                    <Chip key={item}>{profileLabels.equipment[item]}</Chip>
                   ))}
                 </div>
-              )}
-              {feedbackError && (
-                <p role="alert" className="mt-4 text-sm text-danger">
-                  Não foi possível salvar sua avaliação. Tente novamente.
-                </p>
-              )}
-            </section>
-          </div>
-        )}
-      </div>
-    </main>
+              </ProfileDetail>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              className="mt-6 h-12 w-full"
+              onClick={() => navigate({ to: "/profile/setup" })}
+            >
+              Editar perfil
+            </Button>
+          </section>
+
+          <section className="rounded-3xl border border-border bg-surface p-6 sm:p-8">
+            <div className="mb-4">
+              <h2 className="text-base font-extrabold uppercase tracking-wider">
+                Vídeos recomendados
+              </h2>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                {baseText}
+              </p>
+            </div>
+            {recommendationsQuery.isError ? (
+              <p className="rounded-2xl border border-border bg-input p-5 text-danger">
+                Não foi possível carregar os vídeos.
+              </p>
+            ) : recommendations.length === 0 ? (
+              <p className="rounded-2xl border border-border bg-input p-5 text-muted-foreground">
+                Ainda não há vídeos compatíveis com seu perfil.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {recommendations.map((video) => (
+                  <article
+                    key={video.id}
+                    className="grid gap-4 rounded-2xl border border-border bg-input/70 p-3 sm:grid-cols-[minmax(150px,200px)_minmax(0,1fr)_150px] sm:items-center sm:gap-5 sm:p-4"
+                  >
+                    <a
+                      href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group relative block aspect-video overflow-hidden rounded-xl bg-background"
+                      aria-label={`Assistir: ${video.title}`}
+                    >
+                      <img
+                        src={`https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`}
+                        alt=""
+                        className="h-full w-full object-cover brightness-[0.55] transition duration-300 group-hover:brightness-75"
+                      />
+                      <span className="absolute inset-0 grid place-items-center text-white">
+                        <span className="grid size-11 place-items-center rounded-full bg-primary shadow-lg">
+                          <Play className="ml-1 size-5 fill-current" />
+                        </span>
+                      </span>
+                      <span className="absolute bottom-1.5 right-1.5 rounded bg-black px-1.5 py-0.5 text-xs font-bold text-white">
+                        {formatDuration(video.durationSeconds)}
+                      </span>
+                    </a>
+                    <div className="min-w-0">
+                      <h3 className="font-bold leading-snug">{video.title}</h3>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        {video.channel} · YouTube
+                      </p>
+                    </div>
+                    <div className="grid gap-2">
+                      <FeedbackButton
+                        label="Gostei"
+                        selected={video.myFeedback === "like"}
+                        disabled={feedbackMutation.isPending}
+                        onClick={() =>
+                          feedbackMutation.mutate({
+                            videoId: video.id,
+                            rating: video.myFeedback === "like" ? null : "like",
+                          })
+                        }
+                      />
+                      <FeedbackButton
+                        label="Não gostei"
+                        selected={video.myFeedback === "dislike"}
+                        disabled={feedbackMutation.isPending}
+                        onClick={() =>
+                          feedbackMutation.mutate({
+                            videoId: video.id,
+                            rating:
+                              video.myFeedback === "dislike" ? null : "dislike",
+                          })
+                        }
+                      />
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+            {feedbackError && (
+              <p role="alert" className="mt-4 text-sm text-danger">
+                Não foi possível salvar sua avaliação. Tente novamente.
+              </p>
+            )}
+          </section>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -252,7 +275,9 @@ function Measure({ label, value }: { label: string; value: string }) {
   return (
     <div className="min-w-0 rounded-2xl bg-input p-3 sm:p-4">
       <p className="text-xs font-medium text-muted-foreground">{label}</p>
-      <p className="mt-0.5 text-lg font-extrabold leading-tight sm:text-xl">{value}</p>
+      <p className="mt-0.5 text-lg font-extrabold leading-tight sm:text-xl">
+        {value}
+      </p>
     </div>
   );
 }

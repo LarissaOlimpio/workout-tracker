@@ -13,7 +13,11 @@ import { Label } from "../../../components/ui/Label";
 import { ChipCheckbox } from "../../../components/profile/ChipCheckbox";
 import { RadioCard } from "../../../components/profile/RadioCard";
 import { UnitInput } from "../../../components/profile/UnitInput";
-import { getProfile, saveProfile, type ProfileFormValues } from "../../../lib/profile-api";
+import {
+  getProfile,
+  saveProfile,
+  type ProfileFormValues,
+} from "../../../lib/profile-api";
 import { profileSetupSchema } from "../../../lib/profile-schema";
 import {
   daysOptions,
@@ -50,30 +54,48 @@ function ProfileSetupPage() {
   } = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSetupSchema),
     defaultValues: {
-      birthDate: "", heightCm: "", weightKg: "", chestCm: "", waistCm: "", hipCm: "",
-      goal: undefined, level: undefined, days: undefined, equipment: [],
+      birthDate: "",
+      heightCm: "",
+      weightKg: "",
+      chestCm: "",
+      waistCm: "",
+      hipCm: "",
+      goal: undefined,
+      level: undefined,
+      days: undefined,
+      equipment: [],
     },
   });
   useEffect(() => {
     let active = true;
-    getProfile().then((profile) => {
-      if (!active) return;
-      const [year, month, day] = profile.birthDate.slice(0, 10).split("-");
-      setValue("birthDate", `${day}/${month}/${year}`);
-      setValue("heightCm", String(profile.heightCm));
-      setValue("weightKg", String(profile.weightKg));
-      setValue("chestCm", profile.chestCm === null ? "" : String(profile.chestCm));
-      setValue("waistCm", profile.waistCm === null ? "" : String(profile.waistCm));
-      setValue("hipCm", profile.hipCm === null ? "" : String(profile.hipCm));
-      setValue("goal", profile.goal);
-      setValue("level", profile.level);
-      setValue("days", profile.daysPerWeek);
-      setValue("equipment", profile.equipment);
-    }).catch((error: { status?: number }) => {
-      if (!active) return;
-      if (error.status !== 404) setLoadError(true);
-    });
-    return () => { active = false; };
+    getProfile()
+      .then((profile) => {
+        if (!active) return;
+        const [year, month, day] = profile.birthDate.slice(0, 10).split("-");
+        setValue("birthDate", `${day}/${month}/${year}`);
+        setValue("heightCm", String(profile.heightCm));
+        setValue("weightKg", String(profile.weightKg));
+        setValue(
+          "chestCm",
+          profile.chestCm === null ? "" : String(profile.chestCm),
+        );
+        setValue(
+          "waistCm",
+          profile.waistCm === null ? "" : String(profile.waistCm),
+        );
+        setValue("hipCm", profile.hipCm === null ? "" : String(profile.hipCm));
+        setValue("goal", profile.goal);
+        setValue("level", profile.level);
+        setValue("days", profile.daysPerWeek);
+        setValue("equipment", profile.equipment);
+      })
+      .catch((error: { status?: number }) => {
+        if (!active) return;
+        if (error.status !== 404) setLoadError(true);
+      });
+    return () => {
+      active = false;
+    };
   }, [setValue]);
   const selectedGoal = useWatch({ control, name: "goal" });
   const selectedLevel = useWatch({ control, name: "level" });
@@ -90,296 +112,284 @@ function ProfileSetupPage() {
   const birthDateField = register("birthDate");
 
   return (
-    <main className="min-h-screen bg-background px-4 py-8 text-foreground sm:px-6 lg:px-8 lg:py-10">
-      <div className="mx-auto max-w-7xl">
-        <header className="mb-8">
-          <div className="mb-5 text-2xl font-extrabold tracking-tight text-foreground">
-            TRAIN <span className="text-primary">UP</span>
-          </div>
-          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Cadastro do perfil
-          </h1>
-          <p className="mt-2 text-base text-muted-foreground sm:text-lg">
-            Insira suas informações para começarmos a acompanhar sua evolução!
-          </p>
-        </header>
+    <div className="text-foreground">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+          Cadastro do perfil
+        </h1>
+        <p className="mt-2 text-base text-muted-foreground sm:text-lg">
+          Insira suas informações para começarmos a acompanhar sua evolução!
+        </p>
+      </div>
 
-        <form className="space-y-6" noValidate onSubmit={onSubmit}>
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <section className="rounded-3xl border border-border bg-surface p-5 sm:p-7">
-              <h2 className="mb-5 text-lg font-bold uppercase tracking-wide">
-                Dados físicos e medidas
-              </h2>
+      <form className="space-y-6" noValidate onSubmit={onSubmit}>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <section className="rounded-3xl border border-border bg-surface p-5 sm:p-7">
+            <h2 className="mb-5 text-lg font-bold uppercase tracking-wide">
+              Dados físicos e medidas
+            </h2>
 
-              <div className="space-y-5">
+            <div className="space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor="birthDate">Data de nascimento</Label>
+                <Input
+                  id="birthDate"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="bday"
+                  placeholder="dd/mm/aaaa"
+                  maxLength={10}
+                  {...birthDateField}
+                  onChange={(event) => {
+                    event.currentTarget.value = maskDate(
+                      event.currentTarget.value,
+                    );
+                    void birthDateField.onChange(event);
+                  }}
+                />
+                {errors.birthDate && (
+                  <p className="text-sm text-danger">
+                    {errors.birthDate.message}
+                  </p>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="birthDate">Data de nascimento</Label>
-                  <Input
-                    id="birthDate"
+                  <Label htmlFor="heightCm">Altura</Label>
+                  <UnitInput
+                    id="heightCm"
+                    unit="cm"
                     type="text"
-                    inputMode="numeric"
-                    autoComplete="bday"
-                    placeholder="dd/mm/aaaa"
-                    maxLength={10}
-                    {...birthDateField}
-                    onChange={(event) => {
-                      event.currentTarget.value = maskDate(
-                        event.currentTarget.value,
-                      );
-                      void birthDateField.onChange(event);
-                    }}
+                    inputMode="decimal"
+                    placeholder="170"
+                    aria-describedby={
+                      errors.heightCm ? "heightCm-error" : undefined
+                    }
+                    {...register("heightCm")}
                   />
-                  {errors.birthDate && (
-                    <p className="text-sm text-danger">
-                      {errors.birthDate.message}
+                  {errors.heightCm && (
+                    <p id="heightCm-error" className="text-sm text-danger">
+                      {errors.heightCm.message}
                     </p>
                   )}
                 </div>
-
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="heightCm">Altura</Label>
-                    <UnitInput
-                      id="heightCm"
-                      unit="cm"
-                      type="text"
-                      inputMode="decimal"
-                      placeholder="170"
-                      aria-describedby={
-                        errors.heightCm ? "heightCm-error" : undefined
-                      }
-                      {...register("heightCm")}
-                    />
-                    {errors.heightCm && (
-                      <p id="heightCm-error" className="text-sm text-danger">
-                        {errors.heightCm.message}
-                      </p>
-                    )}
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="weightKg">Peso</Label>
-                    <UnitInput
-                      id="weightKg"
-                      unit="kg"
-                      type="text"
-                      inputMode="decimal"
-                      placeholder="72"
-                      aria-describedby={
-                        errors.weightKg ? "weightKg-error" : undefined
-                      }
-                      {...register("weightKg")}
-                    />
-                    {errors.weightKg && (
-                      <p id="weightKg-error" className="text-sm text-danger">
-                        {errors.weightKg.message}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="border-t border-border pt-5">
-                  <h3 className="font-semibold">Medidas corporais</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Use uma fita métrica, sem apertar.
-                  </p>
-                  <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
-                    {(
-                      [
-                        ["chestCm", "Peito", "Na linha dos mamilos"],
-                        ["waistCm", "Cintura", "Na altura do umbigo"],
-                        ["hipCm", "Quadril", "Na parte mais larga"],
-                      ] as const
-                    ).map(([name, label, hint]) => (
-                      <div key={name} className="space-y-2">
-                        <Label htmlFor={name}>{label}</Label>
-                        <UnitInput
-                          id={name}
-                          unit="cm"
-                          type="text"
-                          inputMode="decimal"
-                          placeholder="--"
-                          aria-describedby={
-                            errors[name] ? `${name}-error` : undefined
-                          }
-                          {...register(name)}
-                        />
-                        {errors[name] ? (
-                          <p
-                            id={`${name}-error`}
-                            className="text-sm text-danger"
-                          >
-                            {errors[name]?.message}
-                          </p>
-                        ) : (
-                          <p className="text-xs text-muted-foreground">
-                            {hint}
-                          </p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="weightKg">Peso</Label>
+                  <UnitInput
+                    id="weightKg"
+                    unit="kg"
+                    type="text"
+                    inputMode="decimal"
+                    placeholder="72"
+                    aria-describedby={
+                      errors.weightKg ? "weightKg-error" : undefined
+                    }
+                    {...register("weightKg")}
+                  />
+                  {errors.weightKg && (
+                    <p id="weightKg-error" className="text-sm text-danger">
+                      {errors.weightKg.message}
+                    </p>
+                  )}
                 </div>
               </div>
-            </section>
 
-            <section className="rounded-3xl border border-border bg-surface p-5 sm:p-7">
-              <h2 className="mb-5 text-lg font-bold uppercase tracking-wide">
-                Sua rotina e metas
-              </h2>
-
-              <fieldset>
-                <legend className="mb-2 font-medium">Objetivo</legend>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  {goalOptions.map((goal) => (
-                    <RadioCard
-                      key={goal}
-                      value={goal}
-                      checked={selectedGoal === goal}
-                      {...register("goal")}
-                    >
-                      {profileLabels.goal[goal]}
-                    </RadioCard>
+              <div className="border-t border-border pt-5">
+                <h3 className="font-semibold">Medidas corporais</h3>
+                <p className="text-sm text-muted-foreground">
+                  Use uma fita métrica, sem apertar.
+                </p>
+                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                  {(
+                    [
+                      ["chestCm", "Peito", "Na linha dos mamilos"],
+                      ["waistCm", "Cintura", "Na altura do umbigo"],
+                      ["hipCm", "Quadril", "Na parte mais larga"],
+                    ] as const
+                  ).map(([name, label, hint]) => (
+                    <div key={name} className="space-y-2">
+                      <Label htmlFor={name}>{label}</Label>
+                      <UnitInput
+                        id={name}
+                        unit="cm"
+                        type="text"
+                        inputMode="decimal"
+                        placeholder="--"
+                        aria-describedby={
+                          errors[name] ? `${name}-error` : undefined
+                        }
+                        {...register(name)}
+                      />
+                      {errors[name] ? (
+                        <p id={`${name}-error`} className="text-sm text-danger">
+                          {errors[name]?.message}
+                        </p>
+                      ) : (
+                        <p className="text-xs text-muted-foreground">{hint}</p>
+                      )}
+                    </div>
                   ))}
                 </div>
-                {errors.goal && (
-                  <p className="mt-2 text-sm text-danger">
-                    {errors.goal.message}
-                  </p>
-                )}
-              </fieldset>
-
-              <fieldset className="mt-6">
-                <legend className="mb-2 font-medium">
-                  Nível de experiência
-                </legend>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                  {levelOptions.map((level) => (
-                    <RadioCard
-                      key={level}
-                      value={level}
-                      checked={selectedLevel === level}
-                      {...register("level")}
-                      className="min-h-32"
-                    >
-                      {profileLabels.level[level]}
-                      <span className="mt-1 block text-sm font-normal leading-snug text-muted-foreground">
-                        {profileLabels.levelDescription[level]}
-                      </span>
-                    </RadioCard>
-                  ))}
-                </div>
-                {errors.level && (
-                  <p className="mt-2 text-sm text-danger">
-                    {errors.level.message}
-                  </p>
-                )}
-              </fieldset>
-
-              <fieldset className="mt-6">
-                <legend className="mb-2 font-medium">
-                  Dias de treino por semana
-                </legend>
-                <div className="flex flex-wrap gap-2.5">
-                  {daysOptions.map((day) => (
-                    <RadioCard
-                      key={day}
-                      value={day}
-                      checked={daysField.value === day}
-                      name={daysField.name}
-                      ref={daysField.ref}
-                      onBlur={daysField.onBlur}
-                      onChange={() => daysField.onChange(day)}
-                      className="size-12 items-center justify-center rounded-xl p-0"
-                    >
-                      {day}
-                    </RadioCard>
-                  ))}
-                </div>
-                {errors.days && (
-                  <p className="mt-2 text-sm text-danger">
-                    {errors.days.message}
-                  </p>
-                )}
-              </fieldset>
-            </section>
-          </div>
+              </div>
+            </div>
+          </section>
 
           <section className="rounded-3xl border border-border bg-surface p-5 sm:p-7">
+            <h2 className="mb-5 text-lg font-bold uppercase tracking-wide">
+              Sua rotina e metas
+            </h2>
+
             <fieldset>
-              <legend className="text-lg font-bold uppercase tracking-wide">
-                Equipamentos em casa
-              </legend>
-              <p className="mb-4 text-sm text-muted-foreground">
-                Marque tudo o que você tem. Escolher “Nenhum” desmarca as outras
-                opções.
-              </p>
-              <div className="flex flex-wrap gap-2.5">
-                {equipmentOptions.map((equipment) => (
-                  <ChipCheckbox
-                    key={equipment}
-                    name="equipment"
-                    value={equipment}
-                    checked={selectedEquipment.includes(equipment)}
-                    onBlur={register("equipment").onBlur}
-                    ref={register("equipment").ref}
-                    onChange={(event) => {
-                      const checked = event.currentTarget.checked;
-                      const current = getValues("equipment") ?? [];
-                      const next: Equipment[] =
-                        equipment === "none"
-                          ? checked
-                            ? ["none"]
-                            : []
-                          : checked
-                            ? [
-                                ...current.filter((item) => item !== "none"),
-                                equipment,
-                              ]
-                            : current.filter((item) => item !== equipment);
-                      setValue("equipment", next, {
-                        shouldDirty: true,
-                        shouldValidate: true,
-                      });
-                    }}
+              <legend className="mb-2 font-medium">Objetivo</legend>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {goalOptions.map((goal) => (
+                  <RadioCard
+                    key={goal}
+                    value={goal}
+                    checked={selectedGoal === goal}
+                    {...register("goal")}
                   >
-                    {profileLabels.equipment[equipment]}
-                  </ChipCheckbox>
+                    {profileLabels.goal[goal]}
+                  </RadioCard>
                 ))}
               </div>
-              {errors.equipment && (
-                <p className="mt-3 text-sm text-danger">
-                  {errors.equipment.message}
+              {errors.goal && (
+                <p className="mt-2 text-sm text-danger">
+                  {errors.goal.message}
+                </p>
+              )}
+            </fieldset>
+
+            <fieldset className="mt-6">
+              <legend className="mb-2 font-medium">Nível de experiência</legend>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                {levelOptions.map((level) => (
+                  <RadioCard
+                    key={level}
+                    value={level}
+                    checked={selectedLevel === level}
+                    {...register("level")}
+                    className="min-h-32"
+                  >
+                    {profileLabels.level[level]}
+                    <span className="mt-1 block text-sm font-normal leading-snug text-muted-foreground">
+                      {profileLabels.levelDescription[level]}
+                    </span>
+                  </RadioCard>
+                ))}
+              </div>
+              {errors.level && (
+                <p className="mt-2 text-sm text-danger">
+                  {errors.level.message}
+                </p>
+              )}
+            </fieldset>
+
+            <fieldset className="mt-6">
+              <legend className="mb-2 font-medium">
+                Dias de treino por semana
+              </legend>
+              <div className="flex flex-wrap gap-2.5">
+                {daysOptions.map((day) => (
+                  <RadioCard
+                    key={day}
+                    value={day}
+                    checked={daysField.value === day}
+                    name={daysField.name}
+                    ref={daysField.ref}
+                    onBlur={daysField.onBlur}
+                    onChange={() => daysField.onChange(day)}
+                    className="size-12 items-center justify-center rounded-xl p-0"
+                  >
+                    {day}
+                  </RadioCard>
+                ))}
+              </div>
+              {errors.days && (
+                <p className="mt-2 text-sm text-danger">
+                  {errors.days.message}
                 </p>
               )}
             </fieldset>
           </section>
+        </div>
 
-          {(validationAttempted || mutation.isError || loadError) && (
-            <p className="text-right text-sm text-danger">
-              {validationAttempted
-                ? "Revise os campos destacados antes de continuar."
-                : "Não foi possível salvar seu perfil. Tente novamente."}
+        <section className="rounded-3xl border border-border bg-surface p-5 sm:p-7">
+          <fieldset>
+            <legend className="text-lg font-bold uppercase tracking-wide">
+              Equipamentos em casa
+            </legend>
+            <p className="mb-4 text-sm text-muted-foreground">
+              Marque tudo o que você tem. Escolher “Nenhum” desmarca as outras
+              opções.
             </p>
-          )}
-          <div className="flex flex-col-reverse justify-end gap-3 sm:flex-row">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.history.back()}
-            >
-              Voltar
-            </Button>
-            <Button
-              type="submit"
-              className="min-w-56"
-              disabled={mutation.isPending}
-            >
-              {mutation.isPending ? "Salvando..." : "Salvar e continuar"}
-            </Button>
-          </div>
-        </form>
-      </div>
-    </main>
+            <div className="flex flex-wrap gap-2.5">
+              {equipmentOptions.map((equipment) => (
+                <ChipCheckbox
+                  key={equipment}
+                  name="equipment"
+                  value={equipment}
+                  checked={selectedEquipment.includes(equipment)}
+                  onBlur={register("equipment").onBlur}
+                  ref={register("equipment").ref}
+                  onChange={(event) => {
+                    const checked = event.currentTarget.checked;
+                    const current = getValues("equipment") ?? [];
+                    const next: Equipment[] =
+                      equipment === "none"
+                        ? checked
+                          ? ["none"]
+                          : []
+                        : checked
+                          ? [
+                              ...current.filter((item) => item !== "none"),
+                              equipment,
+                            ]
+                          : current.filter((item) => item !== equipment);
+                    setValue("equipment", next, {
+                      shouldDirty: true,
+                      shouldValidate: true,
+                    });
+                  }}
+                >
+                  {profileLabels.equipment[equipment]}
+                </ChipCheckbox>
+              ))}
+            </div>
+            {errors.equipment && (
+              <p className="mt-3 text-sm text-danger">
+                {errors.equipment.message}
+              </p>
+            )}
+          </fieldset>
+        </section>
+
+        {(validationAttempted || mutation.isError || loadError) && (
+          <p className="text-right text-sm text-danger">
+            {validationAttempted
+              ? "Revise os campos destacados antes de continuar."
+              : "Não foi possível salvar seu perfil. Tente novamente."}
+          </p>
+        )}
+        <div className="flex flex-col-reverse justify-end gap-3 sm:flex-row">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.history.back()}
+          >
+            Voltar
+          </Button>
+          <Button
+            type="submit"
+            className="min-w-56"
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending ? "Salvando..." : "Salvar e continuar"}
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 }
 

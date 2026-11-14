@@ -17,7 +17,7 @@ function HomePage() {
   });
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-6">
+    <div className="flex justify-center py-8">
       <div className="w-full max-w-md rounded-2xl border border-border bg-surface p-8 shadow-lg">
         <h1 className="mb-6 text-center text-2xl font-bold">Bem-vindo</h1>
         <p className="mb-4 text-center">Olá, {user?.name}</p>
