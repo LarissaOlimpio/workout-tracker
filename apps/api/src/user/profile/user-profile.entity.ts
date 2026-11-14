@@ -43,6 +43,9 @@ export class UserProfile {
   @Column({ type: 'double precision' })
   weightKg!: number;
 
+  @Column({ type: 'double precision', nullable: true })
+  targetWeightKg!: number | null;
+
   @Column({ type: 'double precision' })
   heightCm!: number;
 

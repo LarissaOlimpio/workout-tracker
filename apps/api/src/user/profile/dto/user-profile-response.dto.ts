@@ -10,6 +10,7 @@ export class UserProfileResponseDto {
   daysPerWeek: number;
   equipment: ProfileEquipment[];
   weightKg: number;
+  targetWeightKg: number | null;
   heightCm: number;
   chestCm: number | null;
   waistCm: number | null;

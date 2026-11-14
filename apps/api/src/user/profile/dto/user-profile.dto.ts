@@ -89,6 +89,13 @@ export class UserProfileDto {
   @Max(300)
   weightKg: number;
 
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(30)
+  @Max(300)
+  targetWeightKg?: number | null;
+
   @Type(() => Number)
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(100)

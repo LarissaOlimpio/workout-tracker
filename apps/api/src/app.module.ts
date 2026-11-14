@@ -6,6 +6,8 @@ import { AppService } from './app.service.js';
 import { UserModule } from './user/user.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { VideoModule } from './video/video.module.js';
+import { MeasurementModule } from './measurement/measurement.module.js';
+import { DashboardModule } from './dashboard/dashboard.module.js';
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { VideoModule } from './video/video.module.js';
     UserModule,
     AuthModule,
     VideoModule,
+    MeasurementModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],

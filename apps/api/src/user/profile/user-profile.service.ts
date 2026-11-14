@@ -5,6 +5,7 @@ import { User } from '../user.entity.js';
 import { UserProfileDto } from './dto/user-profile.dto.js';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto.js';
 import { UserProfile } from './user-profile.entity.js';
+import { Measurement } from '../../measurement/measurement.entity.js';
 
 @Injectable()
 export class UserProfileService {
@@ -13,6 +14,8 @@ export class UserProfileService {
     private readonly profileRepo: Repository<UserProfile>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+    @InjectRepository(Measurement)
+    private readonly measurementRepo: Repository<Measurement>,
   ) {}
 
   async findForUser(userId: string): Promise<UserProfileResponseDto> {
@@ -45,6 +48,7 @@ export class UserProfileService {
       daysPerWeek: dto.daysPerWeek,
       equipment: [...dto.equipment],
       weightKg: dto.weightKg,
+      targetWeightKg: dto.targetWeightKg ?? null,
       heightCm: dto.heightCm,
       chestCm: dto.chestCm ?? null,
       waistCm: dto.waistCm ?? null,
@@ -52,7 +56,9 @@ export class UserProfileService {
       birthDate: dto.birthDate.toISOString().slice(0, 10),
     });
 
-    return this.toResponse(await this.profileRepo.save(profile));
+    const savedProfile = await this.profileRepo.save(profile);
+    await this.syncLatestMeasurement(savedProfile);
+    return this.toResponse(savedProfile);
   }
 
   private toResponse(profile: UserProfile): UserProfileResponseDto {
@@ -62,11 +68,42 @@ export class UserProfileService {
       daysPerWeek: profile.daysPerWeek,
       equipment: [...profile.equipment],
       weightKg: profile.weightKg,
+      targetWeightKg: profile.targetWeightKg,
       heightCm: profile.heightCm,
       chestCm: profile.chestCm,
       waistCm: profile.waistCm,
       hipCm: profile.hipCm,
       birthDate: profile.birthDate,
     };
+  }
+
+  private async syncLatestMeasurement(profile: UserProfile): Promise<void> {
+    const latest = await this.measurementRepo.findOne({
+      where: { userId: profile.userId },
+      order: { measuredAt: 'DESC' },
+    });
+    if (
+      latest &&
+      latest.weightKg === profile.weightKg &&
+      latest.chestCm === profile.chestCm &&
+      latest.waistCm === profile.waistCm &&
+      latest.hipCm === profile.hipCm
+    ) {
+      return;
+    }
+
+    const measuredAt = new Date().toISOString().slice(0, 10);
+    const todayMeasurement =
+      (await this.measurementRepo.findOne({
+        where: { userId: profile.userId, measuredAt },
+      })) ??
+      this.measurementRepo.create({ userId: profile.userId, measuredAt });
+    Object.assign(todayMeasurement, {
+      weightKg: profile.weightKg,
+      chestCm: profile.chestCm,
+      waistCm: profile.waistCm,
+      hipCm: profile.hipCm,
+    });
+    await this.measurementRepo.save(todayMeasurement);
   }
 }

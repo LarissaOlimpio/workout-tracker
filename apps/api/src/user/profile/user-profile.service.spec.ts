@@ -5,6 +5,7 @@ import { UserProfileDto } from './dto/user-profile.dto.js';
 import { UserProfile } from './user-profile.entity.js';
 import { User } from '../user.entity.js';
 import { UserProfileService } from './user-profile.service.js';
+import { Measurement } from '../../measurement/measurement.entity.js';
 import {
   ProfileEquipment,
   ProfileGoal,
@@ -22,6 +23,11 @@ describe('UserProfileService', () => {
   let userRepository: {
     findOne: ReturnType<typeof vi.fn>;
   };
+  let measurementRepository: {
+    create: ReturnType<typeof vi.fn>;
+    findOne: ReturnType<typeof vi.fn>;
+    save: ReturnType<typeof vi.fn>;
+  };
 
   const userId = 'a4360fd3-3448-4f4c-a18e-1410c91940bd';
   const user = { id: userId } as User;
@@ -33,6 +39,7 @@ describe('UserProfileService', () => {
       daysPerWeek: 4,
       equipment: [ProfileEquipment.Dumbbells, ProfileEquipment.Bench],
       weightKg: 72.5,
+      targetWeightKg: 65,
       heightCm: 178,
       chestCm: 100,
       waistCm: 80,
@@ -46,6 +53,7 @@ describe('UserProfileService', () => {
     daysPerWeek: 3,
     equipment: [ProfileEquipment.ResistanceBands],
     weightKg: 68.25,
+    targetWeightKg: 62.5,
     heightCm: 170,
     chestCm: 98,
     waistCm: 78,
@@ -62,6 +70,11 @@ describe('UserProfileService', () => {
     userRepository = {
       findOne: vi.fn(),
     };
+    measurementRepository = {
+      create: vi.fn((data) => ({ ...data })),
+      findOne: vi.fn().mockResolvedValue(null),
+      save: vi.fn(async (measurement) => measurement),
+    };
 
     moduleRef = await Test.createTestingModule({
       providers: [
@@ -73,6 +86,10 @@ describe('UserProfileService', () => {
         {
           provide: getRepositoryToken(User),
           useValue: userRepository,
+        },
+        {
+          provide: getRepositoryToken(Measurement),
+          useValue: measurementRepository,
         },
       ],
     }).compile();
@@ -95,6 +112,7 @@ describe('UserProfileService', () => {
         daysPerWeek: expectedProfile.daysPerWeek,
         equipment: expectedProfile.equipment,
         weightKg: expectedProfile.weightKg,
+        targetWeightKg: expectedProfile.targetWeightKg,
         heightCm: expectedProfile.heightCm,
         chestCm: expectedProfile.chestCm,
         waistCm: expectedProfile.waistCm,
@@ -142,6 +160,7 @@ describe('UserProfileService', () => {
         daysPerWeek: dto.daysPerWeek,
         equipment: dto.equipment,
         weightKg: dto.weightKg,
+        targetWeightKg: dto.targetWeightKg,
         heightCm: dto.heightCm,
         chestCm: dto.chestCm,
         waistCm: dto.waistCm,
@@ -165,6 +184,7 @@ describe('UserProfileService', () => {
           daysPerWeek: dto.daysPerWeek,
           equipment: dto.equipment,
           weightKg: dto.weightKg,
+          targetWeightKg: dto.targetWeightKg,
           heightCm: dto.heightCm,
           chestCm: dto.chestCm,
           waistCm: dto.waistCm,
@@ -193,6 +213,7 @@ describe('UserProfileService', () => {
         daysPerWeek: dto.daysPerWeek,
         equipment: dto.equipment,
         weightKg: dto.weightKg,
+        targetWeightKg: dto.targetWeightKg,
         heightCm: dto.heightCm,
         chestCm: dto.chestCm,
         waistCm: dto.waistCm,
@@ -238,6 +259,7 @@ describe('UserProfileService', () => {
       delete dto.chestCm;
       delete dto.waistCm;
       delete dto.hipCm;
+      delete dto.targetWeightKg;
       const existingProfile = profile({ chestCm: 100, waistCm: 80, hipCm: 95 });
       userRepository.findOne.mockResolvedValue(user);
       profileRepository.findOne.mockResolvedValue(existingProfile);
@@ -253,10 +275,96 @@ describe('UserProfileService', () => {
         hipCm: null,
       });
       expect(result).toMatchObject({
+        targetWeightKg: null,
         chestCm: null,
         waistCm: null,
         hipCm: null,
       });
+    });
+
+    it('creates an initial measurement from the replaced profile when none exists', async () => {
+      const dto = profileDto();
+      userRepository.findOne.mockResolvedValue(user);
+      profileRepository.findOne.mockResolvedValue(null);
+      profileRepository.save.mockImplementation(
+        async (entity: UserProfile) => entity,
+      );
+
+      await service.replaceForUser(userId, dto);
+
+      expect(measurementRepository.create).toHaveBeenCalledWith(
+        expect.objectContaining({ userId }),
+      );
+      expect(measurementRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userId,
+          weightKg: dto.weightKg,
+          chestCm: dto.chestCm,
+          waistCm: dto.waistCm,
+          hipCm: dto.hipCm,
+        }),
+      );
+      expect(measurementRepository.save).toHaveBeenCalledOnce();
+    });
+
+    it('does not add a measurement when the latest metrics already match the profile', async () => {
+      const dto = profileDto();
+      userRepository.findOne.mockResolvedValue(user);
+      profileRepository.findOne.mockResolvedValue(profile({
+        weightKg: dto.weightKg,
+        chestCm: dto.chestCm ?? null,
+        waistCm: dto.waistCm ?? null,
+        hipCm: dto.hipCm ?? null,
+      }));
+      profileRepository.save.mockImplementation(
+        async (entity: UserProfile) => entity,
+      );
+      measurementRepository.findOne.mockResolvedValue({
+        weightKg: dto.weightKg,
+        chestCm: dto.chestCm,
+        waistCm: dto.waistCm,
+        hipCm: dto.hipCm,
+      });
+
+      await service.replaceForUser(userId, dto);
+
+      expect(measurementRepository.create).not.toHaveBeenCalled();
+      expect(measurementRepository.save).not.toHaveBeenCalled();
+    });
+
+    it('adds a measurement for today when profile metrics differ from the latest record', async () => {
+      const dto = profileDto();
+      const olderDate = new Date();
+      olderDate.setUTCDate(olderDate.getUTCDate() - 30);
+      userRepository.findOne.mockResolvedValue(user);
+      profileRepository.findOne.mockResolvedValue(profile());
+      profileRepository.save.mockImplementation(
+        async (entity: UserProfile) => entity,
+      );
+      measurementRepository.findOne
+        .mockResolvedValueOnce({
+          measuredAt: olderDate.toISOString().slice(0, 10),
+          weightKg: 72.5,
+          chestCm: 100,
+          waistCm: 80,
+          hipCm: 95,
+        })
+        .mockResolvedValueOnce(null);
+
+      await service.replaceForUser(userId, dto);
+
+      expect(measurementRepository.create).toHaveBeenCalledWith({
+        userId,
+        measuredAt: new Date().toISOString().slice(0, 10),
+      });
+      expect(measurementRepository.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          weightKg: dto.weightKg,
+          chestCm: dto.chestCm,
+          waistCm: dto.waistCm,
+          hipCm: dto.hipCm,
+        }),
+      );
     });
   });
 });
