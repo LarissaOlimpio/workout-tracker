@@ -3,7 +3,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DataSource } from 'typeorm';
 import { User } from './user/user.entity.js';
-import { UserProfile } from './user/user-profile.entity.js';
+import { UserProfile } from './user/profile/user-profile.entity.js';
 
 // Localiza o arquivo .env na raiz do projeto
 const currentDir = dirname(fileURLToPath(import.meta.url));

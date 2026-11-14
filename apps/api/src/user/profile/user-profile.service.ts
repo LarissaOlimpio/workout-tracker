@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from './user.entity.js';
+import { User } from '../user.entity.js';
 import { UserProfileDto } from './dto/user-profile.dto.js';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto.js';
 import { UserProfile } from './user-profile.entity.js';

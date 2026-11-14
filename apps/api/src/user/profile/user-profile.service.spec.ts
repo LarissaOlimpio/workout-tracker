@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { UserProfileDto } from './dto/user-profile.dto.js';
 import { UserProfile } from './user-profile.entity.js';
-import { User } from './user.entity.js';
+import { User } from '../user.entity.js';
 import { UserProfileService } from './user-profile.service.js';
 import {
   ProfileEquipment,
