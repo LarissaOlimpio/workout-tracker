@@ -72,7 +72,7 @@ describe('VideoService', () => {
 
   afterEach(async () => moduleRef.close());
 
-  it('filters by profile tags, equipment and dislikes, and ranks likes first', async () => {
+  it('scores profile matches, filters unavailable equipment and dislikes, and ranks likes first', async () => {
     profileService.findForUser.mockResolvedValue(profile);
     const liked = makeVideo('liked', {
       equipment: [ProfileEquipment.Dumbbells],
@@ -105,11 +105,28 @@ describe('VideoService', () => {
 
     expect(result.videos.map((video) => video.id)).toEqual([
       'liked',
-      'similar',
       'no-gear',
+      'similar',
+      'level',
+      'goal',
     ]);
     expect(result.videos[0].myFeedback).toBe(VideoRating.Like);
     expect(profileService.findForUser).toHaveBeenCalledWith(userId);
+  });
+
+  it('returns up to eight compatible videos even when none match the profile tags', async () => {
+    profileService.findForUser.mockResolvedValue(profile);
+    videoRepo.find.mockResolvedValue(Array.from({ length: 10 }, (_, index) =>
+      makeVideo(`v${index}`, {
+        goals: [ProfileGoal.GainMuscle],
+        levels: [ProfileLevel.Advanced],
+      }),
+    ));
+    feedbackRepo.find.mockResolvedValue([]);
+
+    const result = await service.getRecommendations(userId);
+
+    expect(result.videos).toHaveLength(8);
   });
 
   it('persists feedback for an existing video and updates an existing row', async () => {

@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { UserProfileResponseDto } from '../user/profile/dto/user-profile-response.dto.js';
 import { UserProfileService } from '../user/profile/user-profile.service.js';
-import { ProfileEquipment } from '../user/profile/types/user-profile.enums.js';
 import { RecommendationResponseDto } from './dto/recommendation-response.dto.js';
 import { VideoFeedbackDto } from './dto/video-feedback.dto.js';
 import { VideoFeedback } from './video-feedback.entity.js';
@@ -26,36 +26,21 @@ export class VideoService {
       this.feedbackRepo.find({ where: { userId } }),
     ]);
     const feedbackByVideo = new Map(feedback.map((item) => [item.videoId, item.rating]));
-    const likedVideos = videos.filter(
-      (video) => feedbackByVideo.get(video.id) === VideoRating.Like,
-    );
-
     const recommended = videos
       .filter((video) => {
         if (feedbackByVideo.get(video.id) === VideoRating.Dislike) return false;
-        if (!video.goals.includes(profile.goal) || !video.levels.includes(profile.level)) {
-          return false;
-        }
         return (
           video.equipment.length === 0 ||
-          (!profile.equipment.includes(ProfileEquipment.None) &&
-            video.equipment.every((item) => profile.equipment.includes(item)))
+          video.equipment.every((item) => profile.equipment.includes(item))
         );
       })
       .sort((left, right) => {
         const leftRating = feedbackByVideo.get(left.id) === VideoRating.Like;
         const rightRating = feedbackByVideo.get(right.id) === VideoRating.Like;
         if (leftRating !== rightRating) return leftRating ? -1 : 1;
-        const leftSharedTags = likedVideos.reduce(
-          (count, liked) => count + this.sharedTagCount(left, liked),
-          0,
-        );
-        const rightSharedTags = likedVideos.reduce(
-          (count, liked) => count + this.sharedTagCount(right, liked),
-          0,
-        );
-        return rightSharedTags - leftSharedTags;
-      });
+        return this.score(right, profile) - this.score(left, profile);
+      })
+      .slice(0, 8);
 
     return {
       videos: recommended.map((video) => ({
@@ -90,11 +75,8 @@ export class VideoService {
     await this.feedbackRepo.delete({ userId, videoId });
   }
 
-  private sharedTagCount(left: Video, right: Video): number {
-    return (
-      left.goals.filter((tag) => right.goals.includes(tag)).length +
-      left.levels.filter((tag) => right.levels.includes(tag)).length +
-      left.equipment.filter((tag) => right.equipment.includes(tag)).length
-    );
+  private score(video: Video, profile: UserProfileResponseDto): number {
+    return (video.goals.includes(profile.goal) ? 2 : 0) +
+      (video.levels.includes(profile.level) ? 1 : 0);
   }
 }
