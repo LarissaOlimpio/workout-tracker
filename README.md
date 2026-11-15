@@ -3,10 +3,15 @@
 Plataforma web para quem treina em casa. O usuário cria uma conta, informa seu perfil (objetivo, nível, dias por semana, equipamentos disponíveis e dados físicos), acompanha a evolução de peso e medidas corporais em um dashboard e recebe sugestões de vídeos de treino alinhadas ao seu perfil, avaliando cada sugestão com "gostei" ou "não gostei". Por enquanto os vídeos vêm de um catálogo de exemplo; a busca no YouTube está planejada.
 
 > Projeto em desenvolvimento. Veja o [status](#status) e o [roadmap](#roadmap).
+## Projeto
+
+https://github.com/user-attachments/assets/b5c7d5a1-c0d4-4a90-bc75-94ee77150f20
+
+
 
 ## Funcionalidades
 
-- Cadastro com confirmação de senha e login, com JWT guardado em cookie `HttpOnly`
+- Cadastro com confirmação de  e login, com JWT guardado em cookie `HttpOnly`
 - Logout e rotas protegidas na aplicação web (apenas login, cadastro e recuperação de senha são públicos)
 - Recuperação de senha por e-mail, com link de uso único e validade curta
 - Configurações da conta: editar nome, e-mail e senha, e excluir a conta (apenas dos próprios dados)
@@ -15,7 +20,7 @@ Plataforma web para quem treina em casa. O usuário cria uma conta, informa seu 
 - Recomendações que consideram o perfil e as avaliações anteriores do usuário
 - Dashboard de evolução: peso atual e variação, IMC, gráficos de peso e de medidas, histórico de medições e registro de novas medições
 - Cabeçalho compartilhado em todas as páginas autenticadas, com menu de conta e logout
-
+  
 ## Tecnologias
 
 Monorepo gerenciado com **pnpm**.
@@ -109,6 +114,10 @@ Em desenvolvimento, nenhum e-mail real é enviado. A API envia para o **Mailpit*
 1. Com o Mailpit rodando, peça a recuperação de senha na tela "Esqueceu sua senha?".
 2. Abra `http://localhost:8025` e clique no e-mail recebido.
 3. Abra o link do e-mail, defina a nova senha e faça login.
+* Vídeo antes da mudança de tema da aplicação
+
+https://github.com/user-attachments/assets/c3e326d2-870e-4f06-9b17-af1be1257700
+
 
 Em produção, basta trocar as variáveis `SMTP_*` e `MAIL_FROM` pelas de um provedor de e-mail real (com domínio próprio e registros SPF/DKIM configurados). O código não muda.
 
@@ -169,7 +178,7 @@ Em produção, basta trocar as variáveis `SMTP_*` e `MAIL_FROM` pelas de um pro
 
 - [x] Cadastro, autenticação e CRUD de usuário
 - [x] JWT em cookie HttpOnly, logout e rotas protegidas na web
-- [x] Recuperação de senha por e-mail (testada localmente com Mailpit)
+- [x] Recuperação de  por e-mail (testada localmente com Mailpit)
 - [x] Perfil de treino: API e interface web (cadastro e resumo)
 - [x] Vídeos recomendados com avaliação "gostei" / "não gostei" (catálogo de exemplo)
 - [x] Dashboard de evolução com histórico de medições
