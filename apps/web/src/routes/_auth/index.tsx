@@ -23,17 +23,17 @@ const bmiLabels = {
 
 function HistoryTable({ items }: { items: DashboardData["history"] }) {
   return (
-    <section className="rounded-3xl border border-border bg-surface p-5 sm:p-7">
+    <section className="flex min-h-[160px] flex-1 flex-col overflow-hidden rounded-2xl border border-border bg-surface p-4">
       <h2 className="text-xl font-bold sm:text-2xl">Histórico de Medições</h2>
-      <div className="mt-5 overflow-x-auto">
+      <div className="mt-2 min-h-0 flex-1 overflow-auto">
         <table className="w-full min-w-[620px] border-collapse text-left">
-          <thead>
+          <thead className="sticky top-0 z-10 bg-surface">
             <tr className="border-b border-border text-base font-semibold sm:text-lg">
-              <th className="px-2 py-3">Data</th>
-              <th className="px-2 py-3">Peso</th>
-              <th className="px-2 py-3">Peito</th>
-              <th className="px-2 py-3">Cintura</th>
-              <th className="px-2 py-3">Quadril</th>
+              <th className="px-2 py-2">Data</th>
+              <th className="px-2 py-2">Peso</th>
+              <th className="px-2 py-2">Peito</th>
+              <th className="px-2 py-2">Cintura</th>
+              <th className="px-2 py-2">Quadril</th>
             </tr>
           </thead>
           <tbody>
@@ -42,19 +42,19 @@ function HistoryTable({ items }: { items: DashboardData["history"] }) {
                 key={item.date}
                 className="border-b border-border last:border-0"
               >
-                <td className="px-2 py-3">{formatFullDate(item.date)}</td>
-                <td className="px-2 py-3">{formatNumber(item.weightKg)} kg</td>
-                <td className="px-2 py-3">
+                <td className="px-2 py-2">{formatFullDate(item.date)}</td>
+                <td className="px-2 py-2">{formatNumber(item.weightKg)} kg</td>
+                <td className="px-2 py-2">
                   {item.chestCm == null
                     ? "—"
                     : `${formatNumber(item.chestCm)} cm`}
                 </td>
-                <td className="px-2 py-3">
+                <td className="px-2 py-2">
                   {item.waistCm == null
                     ? "—"
                     : `${formatNumber(item.waistCm)} cm`}
                 </td>
-                <td className="px-2 py-3">
+                <td className="px-2 py-2">
                   {item.hipCm == null ? "—" : `${formatNumber(item.hipCm)} cm`}
                 </td>
               </tr>
@@ -102,29 +102,29 @@ function DashboardPage() {
       : formatNumber(data.weight.deltaKg);
 
   return (
-    <div className="space-y-6 pb-10">
-      <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-3 pb-3 lg:h-full lg:min-h-0">
+      <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight sm:text-5xl">
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
             Dashboard de Evolução
           </h1>
-          <p className="mt-2 text-base text-muted-foreground sm:text-xl">
+          <p className="mt-1 text-sm text-muted-foreground sm:text-base">
             Acompanhe o progresso do seu peso e medidas corporais.
           </p>
         </div>
         <button
           type="button"
           onClick={() => setMeasurementOpen(true)}
-          className="inline-flex shrink-0 items-center justify-center gap-3 rounded-full bg-primary px-6 py-3 text-base font-bold text-primary-foreground transition-colors hover:bg-primary-hover sm:px-8 sm:py-4 sm:text-lg"
+          className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary-hover"
         >
           <Plus aria-hidden="true" size={24} /> Registrar medição
         </button>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
         <MetricCard title="Peso atual">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-4xl font-bold tracking-tight sm:text-5xl">
+            <p className="text-3xl font-bold tracking-tight">
               {formatNumber(data.weight.currentKg)} kg
             </p>
             {data.weight.deltaKg !== 0 && (
@@ -154,7 +154,7 @@ function DashboardPage() {
         </MetricCard>
 
         <MetricCard title="IMC atual">
-          <p className="text-4xl font-bold tracking-tight sm:text-5xl">
+          <p className="text-3xl font-bold tracking-tight">
             {formatNumber(data.bmi.value)}
           </p>
           <span
@@ -165,7 +165,7 @@ function DashboardPage() {
         </MetricCard>
 
         <MetricCard title="Frequência de treino">
-          <p className="text-4xl font-bold tracking-tight sm:text-5xl">—</p>
+          <p className="text-3xl font-bold tracking-tight">—</p>
           <p className="mt-3 text-muted-foreground">
             <span className="mr-2 text-green-400">◉</span>Meta:{" "}
             {data.training.goalPerWeek}× por semana
@@ -176,7 +176,7 @@ function DashboardPage() {
         </MetricCard>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 lg:min-h-0 lg:flex-1 lg:grid-cols-2">
         <WeightChart data={data.weightSeries} targetKg={data.weight.targetKg} />
         <BodyMeasuresChart data={data.measurementSeries} />
       </div>

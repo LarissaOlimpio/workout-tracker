@@ -88,15 +88,15 @@ function ProfileSummaryPage() {
     : "";
 
   return (
-    <div className="text-foreground">
-      <div className="mb-8">
+    <div className="text-foreground lg:flex lg:h-full lg:min-h-0 lg:flex-col">
+      <div className="mb-3 shrink-0">
         <p className="mb-2 text-right text-sm font-medium text-muted-foreground">
           Passo 2 de 3 · Perfil salvo
         </p>
-        <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
+        <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
           Seu perfil está pronto!
         </h1>
-        <p className="mt-1 text-base text-muted-foreground sm:text-lg">
+        <p className="mt-1 text-sm text-muted-foreground sm:text-base">
           Confira seus dados e veja os vídeos escolhidos para o seu objetivo.
         </p>
       </div>
@@ -118,12 +118,12 @@ function ProfileSummaryPage() {
           </Button>
         </div>
       ) : (
-        <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,0.4fr)_minmax(0,0.6fr)]">
-          <section className="rounded-3xl border border-border bg-surface p-6 sm:p-8">
+        <div className="grid items-start gap-4 lg:min-h-0 lg:flex-1 lg:items-stretch lg:grid-cols-[minmax(0,0.4fr)_minmax(0,0.6fr)]">
+          <section className="rounded-2xl border border-border bg-surface p-4 sm:p-5">
             <h2 className="text-base font-extrabold uppercase tracking-wider">
               Dados físicos e medidas
             </h2>
-            <div className="mt-5 grid grid-cols-3 gap-3">
+            <div className="mt-3 grid grid-cols-3 gap-2">
               <Measure label="Altura" value={`${profile.heightCm} cm`} />
               <Measure label="Peso" value={`${profile.weightKg} kg`} />
               <Measure label="IMC" value={bmi ?? "—"} />
@@ -172,15 +172,15 @@ function ProfileSummaryPage() {
             <Button
               type="button"
               variant="outline"
-              className="mt-6 h-12 w-full"
+              className="mt-4 min-h-10 w-full"
               onClick={() => navigate({ to: "/profile/setup" })}
             >
               Editar perfil
             </Button>
           </section>
 
-          <section className="rounded-3xl border border-border bg-surface p-6 sm:p-8">
-            <div className="mb-4">
+          <section className="flex min-h-0 flex-col rounded-2xl border border-border bg-surface p-4 sm:p-5">
+            <div className="mb-3 shrink-0">
               <h2 className="text-base font-extrabold uppercase tracking-wider">
                 Vídeos recomendados
               </h2>
@@ -197,21 +197,25 @@ function ProfileSummaryPage() {
                 Ainda não há vídeos compatíveis com seu perfil.
               </p>
             ) : (
-              <div className="space-y-3">
+              <div className="min-h-0 space-y-2 overflow-y-auto lg:flex-1">
                 {recommendations.map((video) => (
                   <article
                     key={video.id}
-                    className="grid gap-4 rounded-2xl border border-border bg-input/70 p-3 sm:grid-cols-[minmax(150px,200px)_minmax(0,1fr)_150px] sm:items-center sm:gap-5 sm:p-4"
+                    className="grid gap-3 rounded-xl border border-border bg-input/70 p-2 sm:grid-cols-[minmax(130px,180px)_minmax(0,1fr)_140px] sm:items-center sm:gap-3 sm:p-3"
                   >
                     <a
                       href={`https://www.youtube.com/watch?v=${video.youtubeId}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group relative block aspect-video overflow-hidden rounded-xl bg-background"
+                      className="group relative block aspect-video overflow-hidden rounded-xl bg-input"
                       aria-label={`Assistir: ${video.title}`}
                     >
                       <img
                         src={`https://img.youtube.com/vi/${video.youtubeId}/hqdefault.jpg`}
+                        onError={(event) => {
+                          event.currentTarget.onerror = null;
+                          event.currentTarget.style.display = "none";
+                        }}
                         alt=""
                         className="h-full w-full object-cover brightness-[0.55] transition duration-300 group-hover:brightness-75"
                       />
@@ -230,7 +234,7 @@ function ProfileSummaryPage() {
                         {video.channel} · YouTube
                       </p>
                     </div>
-                    <div className="grid gap-2">
+                    <div className="grid gap-1.5">
                       <FeedbackButton
                         label="Gostei"
                         selected={video.myFeedback === "like"}
@@ -273,9 +277,9 @@ function ProfileSummaryPage() {
 
 function Measure({ label, value }: { label: string; value: string }) {
   return (
-    <div className="min-w-0 rounded-2xl bg-input p-3 sm:p-4">
+    <div className="min-w-0 rounded-xl bg-input p-2.5">
       <p className="text-xs font-medium text-muted-foreground">{label}</p>
-      <p className="mt-0.5 text-lg font-extrabold leading-tight sm:text-xl">
+      <p className="mt-0.5 text-base font-extrabold leading-tight sm:text-lg">
         {value}
       </p>
     </div>

@@ -34,9 +34,9 @@ function ChartTooltip({ active, payload, label }: { active?: boolean; payload?: 
 
 export function WeightChart({ data, targetKg }: { data: DashboardData["weightSeries"]; targetKg: number | null }) {
   return (
-    <section className="rounded-3xl border border-border bg-surface p-5 sm:p-7">
+    <section className="flex h-full min-h-0 flex-col rounded-2xl border border-border bg-surface p-4">
       <h2 className="text-xl font-bold sm:text-2xl">Evolução do Peso Corporal</h2>
-      <div className="mt-6 h-64 sm:h-72">
+      <div className="mt-2 h-40 lg:min-h-0 lg:flex-1">
         {data.length ? (
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data} margin={{ top: 18, right: 12, left: 0, bottom: 0 }}>
@@ -65,22 +65,22 @@ export function BodyMeasuresChart({ data }: { data: DashboardData["measurementSe
   const available = (Object.keys(colors) as MeasureKey[]).filter((key) => data.some((item) => item[key] !== null));
   const last = (key: MeasureKey) => [...data].reverse().find((item) => item[key] !== null)?.[key] ?? null;
   return (
-    <section className="rounded-3xl border border-border bg-surface p-5 sm:p-7">
+    <section className="flex h-full min-h-0 flex-col rounded-2xl border border-border bg-surface p-4">
       <h2 className="text-xl font-bold sm:text-2xl">Medidas Corporais</h2>
-      <div className="mt-5 flex flex-wrap gap-2">
+      <div className="mt-2 flex flex-wrap gap-1.5">
         {available.map((key) => (
-          <button key={key} type="button" aria-pressed={active[key]} onClick={() => setActive({ ...active, [key]: !active[key] })} className="rounded-full border px-3 py-1.5 text-sm font-medium transition-opacity sm:text-base" style={{ borderColor: colors[key], color: colors[key], opacity: active[key] ? 1 : 0.45, background: active[key] ? `${colors[key]}18` : "transparent" }}>
+          <button key={key} type="button" aria-pressed={active[key]} onClick={() => setActive({ ...active, [key]: !active[key] })} className="min-h-10 rounded-full border px-3 py-1 text-xs font-medium transition-opacity sm:text-sm" style={{ borderColor: colors[key], color: colors[key], opacity: active[key] ? 1 : 0.45, background: active[key] ? `${colors[key]}18` : "transparent" }}>
             {names[key]} ({formatNumber(last(key)!)} cm)
           </button>
         ))}
       </div>
-      <div className="mt-4 h-56 sm:h-64">
+      <div className="mt-1 h-40 lg:min-h-0 lg:flex-1">
         {available.length && data.length ? (
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data} margin={{ top: 12, right: 12, left: 0, bottom: 0 }}>
               <CartesianGrid stroke="#414a49" vertical={false} />
               <XAxis dataKey="date" tickFormatter={formatShortDate} stroke="#9aa3a1" tickLine={false} axisLine={false} />
-              <YAxis stroke="#9aa3a1" tickLine={false} axisLine={false} width={40} />
+              <YAxis domain={["dataMin - 5", "dataMax + 5"]} stroke="#9aa3a1" tickLine={false} axisLine={false} width={40} />
               <Tooltip content={<ChartTooltip />} />
               {available.filter((key) => active[key]).map((key) => <Line key={key} type="monotone" dataKey={key} name={names[key]} stroke={colors[key]} strokeWidth={2.5} connectNulls dot={false} activeDot={{ r: 4 }} />)}
             </LineChart>

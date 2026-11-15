@@ -74,14 +74,6 @@ function AccountPage() {
     (value) => value.length > 0,
   );
 
-  function cancelChanges() {
-    if (original) setAccount({ name: original.name, email: original.email });
-    setPassword(emptyPassword);
-    setErrors({});
-    setRequestError("");
-    setSuccess("");
-  }
-
   async function saveChanges(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!original) return;
@@ -244,23 +236,23 @@ function AccountPage() {
 
   return (
     <>
-      <div className="mb-12">
-        <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">
+      <div className="mb-4">
+        <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
           Configurações da Conta
         </h1>
-        <p className="mt-3 text-lg text-muted-foreground sm:text-xl">
+        <p className="mt-1 text-sm text-muted-foreground sm:text-base">
           Gerencie seus dados pessoais, altere sua senha ou encerre sua conta a
           qualquer momento.
         </p>
       </div>
 
-      <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1.9fr)_minmax(340px,0.95fr)]">
-        <section className="rounded-3xl border border-border bg-surface p-6 sm:p-8 lg:p-10">
+      <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.9fr)_minmax(340px,0.95fr)]">
+        <section className="rounded-2xl border border-border bg-surface p-4 sm:p-5">
           <form onSubmit={saveChanges} noValidate>
-            <h2 className="text-xl font-extrabold uppercase tracking-wide">
+            <h2 className="text-base font-extrabold uppercase tracking-wide">
               Dados pessoais
             </h2>
-            <div className="mt-6 space-y-5">
+            <div className="mt-3 space-y-3">
               <FormField
                 label="Nome Completo"
                 htmlFor="account-name"
@@ -274,7 +266,7 @@ function AccountPage() {
                     setAccount({ ...account, name: event.target.value })
                   }
                   disabled={isSaving}
-                  className="h-14 rounded-xl border-2 px-4 text-base sm:text-lg"
+                  className="h-9 min-h-10 rounded-xl border px-3 text-sm sm:min-h-0"
                 />
               </FormField>
               <FormField
@@ -291,17 +283,17 @@ function AccountPage() {
                     setAccount({ ...account, email: event.target.value })
                   }
                   disabled={isSaving}
-                  className="h-14 rounded-xl border-2 px-4 text-base sm:text-lg"
+                  className="h-9 min-h-10 rounded-xl border px-3 text-sm sm:min-h-0"
                 />
               </FormField>
             </div>
 
-            <div className="my-8 border-t border-border" />
+            <div className="my-4 border-t border-border" />
 
-            <h2 className="text-xl font-extrabold uppercase tracking-wide">
+            <h2 className="text-base font-extrabold uppercase tracking-wide">
               Segurança e senha
             </h2>
-            <div className="mt-6 space-y-5">
+            <div className="mt-3 space-y-3">
               <PasswordInput
                 id="current-password"
                 label="Senha Atual"
@@ -365,19 +357,19 @@ function AccountPage() {
                 {success}
               </p>
             )}
-            <div className="mt-7 flex flex-wrap items-center gap-5">
+            <div className="mt-4 flex flex-wrap items-center gap-3">
               <Button
                 type="submit"
                 disabled={isSaving}
-                className="h-12 min-w-48 px-7 text-base"
+                className="min-h-10 min-w-40 px-5 text-sm"
               >
                 {isSaving ? "Salvando..." : "Salvar Alterações"}
               </Button>
               <button
                 type="button"
-                onClick={cancelChanges}
+                onClick={() => void navigate({ to: "/" })}
                 disabled={isSaving}
-                className="rounded-full px-2 py-2 text-base font-bold text-muted-foreground hover:text-foreground disabled:opacity-50"
+                className="min-h-10 rounded-full px-3 py-2 text-sm font-bold text-muted-foreground hover:text-foreground disabled:opacity-50"
               >
                 Cancelar
               </button>
@@ -385,9 +377,9 @@ function AccountPage() {
           </form>
         </section>
 
-        <aside className="space-y-6">
-          <section className="flex items-center gap-5 rounded-3xl border border-border bg-surface p-7 sm:p-9">
-            <div className="grid size-24 shrink-0 place-items-center rounded-full bg-input text-2xl font-extrabold ring-1 ring-border">
+        <aside className="space-y-3">
+          <section className="flex items-center gap-3 rounded-2xl border border-border bg-surface p-4">
+            <div className="grid size-14 shrink-0 place-items-center rounded-full bg-input text-lg font-extrabold ring-1 ring-border">
               {initials(original.name)}
             </div>
             <div className="min-w-0">
@@ -402,19 +394,19 @@ function AccountPage() {
             </div>
           </section>
 
-          <section className="rounded-3xl border border-danger/70 bg-danger/10 p-7 sm:p-9">
+          <section className="rounded-2xl border border-danger/70 bg-danger/10 p-4">
             <h2 className="text-lg font-extrabold uppercase text-danger">
               Zona de perigo
             </h2>
-            <h3 className="mt-6 text-2xl font-extrabold">Excluir Conta</h3>
-            <p className="mt-3 text-base leading-relaxed text-muted-foreground sm:text-lg">
+            <h3 className="mt-3 text-xl font-extrabold">Excluir Conta</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               Esta ação é permanente e todos os seus dados de treino serão
               apagados.
             </p>
             <Button
               type="button"
               variant="outline"
-              className="mt-7 h-12 w-full border-danger text-danger hover:bg-danger/10 hover:text-danger"
+              className="mt-4 min-h-10 w-full border-danger text-danger hover:bg-danger/10 hover:text-danger"
               onClick={() => {
                 setDeleteError("");
                 setIsDeleteOpen(true);
@@ -495,7 +487,7 @@ function FormField({
 }) {
   return (
     <div className="space-y-2">
-      <label htmlFor={htmlFor} className="block text-base sm:text-lg">
+      <label htmlFor={htmlFor} className="block text-sm">
         {label}
       </label>
       {children}
@@ -525,7 +517,7 @@ function PasswordInput({
 }) {
   return (
     <div className="space-y-2">
-      <label htmlFor={id} className="block text-base sm:text-lg">
+      <label htmlFor={id} className="block text-sm">
         {label}
       </label>
       <div className="relative">
@@ -538,7 +530,7 @@ function PasswordInput({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           disabled={disabled}
-          className="h-14 rounded-xl border-2 px-4 pr-14 text-base sm:text-lg"
+          className="h-9 min-h-10 rounded-xl border px-3 pr-12 text-sm sm:min-h-0"
           aria-invalid={Boolean(error)}
           aria-describedby={error ? `${id}-error` : undefined}
         />

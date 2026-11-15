@@ -118,8 +118,8 @@ function ProfileSetupPage() {
 
   return (
     <div className="text-foreground">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
           Cadastro do perfil
         </h1>
         <p className="mt-2 text-base text-muted-foreground sm:text-lg">
@@ -127,15 +127,15 @@ function ProfileSetupPage() {
         </p>
       </div>
 
-      <form className="space-y-6" noValidate onSubmit={onSubmit}>
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <section className="rounded-3xl border border-border bg-surface p-5 sm:p-7">
-            <h2 className="mb-5 text-lg font-bold uppercase tracking-wide">
+      <form className="space-y-3" noValidate onSubmit={onSubmit}>
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+          <section className="rounded-2xl border border-border bg-surface p-4">
+            <h2 className="mb-3 text-base font-bold uppercase tracking-wide">
               Dados físicos e medidas
             </h2>
 
-            <div className="space-y-5">
-              <div className="space-y-2">
+            <div className="space-y-3">
+              <div className="space-y-1.5">
                 <Label htmlFor="birthDate">Data de nascimento</Label>
                 <Input
                   id="birthDate"
@@ -160,7 +160,7 @@ function ProfileSetupPage() {
               </div>
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <Label htmlFor="heightCm">Altura</Label>
                   <UnitInput
                     id="heightCm"
@@ -179,7 +179,7 @@ function ProfileSetupPage() {
                     </p>
                   )}
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                   <Label htmlFor="weightKg">Peso</Label>
                   <UnitInput
                     id="weightKg"
@@ -200,7 +200,7 @@ function ProfileSetupPage() {
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="targetWeightKg">Meta de peso (kg)</Label>
                 <UnitInput
                   id="targetWeightKg"
@@ -225,7 +225,7 @@ function ProfileSetupPage() {
                 <p className="text-sm text-muted-foreground">
                   Use uma fita métrica, sem apertar.
                 </p>
-                <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <div className="mt-2 grid grid-cols-1 gap-4 sm:grid-cols-3">
                   {(
                     [
                       ["chestCm", "Peito", "Na linha dos mamilos"],
@@ -233,7 +233,7 @@ function ProfileSetupPage() {
                       ["hipCm", "Quadril", "Na parte mais larga"],
                     ] as const
                   ).map(([name, label, hint]) => (
-                    <div key={name} className="space-y-2">
+                    <div key={name} className="space-y-1.5">
                       <Label htmlFor={name}>{label}</Label>
                       <UnitInput
                         id={name}
@@ -260,14 +260,14 @@ function ProfileSetupPage() {
             </div>
           </section>
 
-          <section className="rounded-3xl border border-border bg-surface p-5 sm:p-7">
-            <h2 className="mb-5 text-lg font-bold uppercase tracking-wide">
+          <section className="rounded-2xl border border-border bg-surface p-4">
+            <h2 className="mb-3 text-base font-bold uppercase tracking-wide">
               Sua rotina e metas
             </h2>
 
             <fieldset>
               <legend className="mb-2 font-medium">Objetivo</legend>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {goalOptions.map((goal) => (
                   <RadioCard
                     key={goal}
@@ -286,16 +286,16 @@ function ProfileSetupPage() {
               )}
             </fieldset>
 
-            <fieldset className="mt-6">
+            <fieldset className="mt-4">
               <legend className="mb-2 font-medium">Nível de experiência</legend>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                 {levelOptions.map((level) => (
                   <RadioCard
                     key={level}
                     value={level}
                     checked={selectedLevel === level}
                     {...register("level")}
-                    className="min-h-32"
+                    className="min-h-24"
                   >
                     {profileLabels.level[level]}
                     <span className="mt-1 block text-sm font-normal leading-snug text-muted-foreground">
@@ -311,7 +311,7 @@ function ProfileSetupPage() {
               )}
             </fieldset>
 
-            <fieldset className="mt-6">
+            <fieldset className="mt-4">
               <legend className="mb-2 font-medium">
                 Dias de treino por semana
               </legend>
@@ -340,9 +340,9 @@ function ProfileSetupPage() {
           </section>
         </div>
 
-        <section className="rounded-3xl border border-border bg-surface p-5 sm:p-7">
+        <section className="rounded-2xl border border-border bg-surface p-4">
           <fieldset>
-            <legend className="text-lg font-bold uppercase tracking-wide">
+            <legend className="text-base font-bold uppercase tracking-wide">
               Equipamentos em casa
             </legend>
             <p className="mb-4 text-sm text-muted-foreground">
